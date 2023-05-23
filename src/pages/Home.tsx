@@ -13,43 +13,46 @@ import {
     IconButton,
     Flex,
 } from '@chakra-ui/react';
-import ToggleTheme from "../components/Toggletheme"
+// import ToggleTheme from "../components/Toggletheme"
+import Navbar from '../components/Navbar';
 
 const Home = () => {
     return (
         <>
             <Box h="100vh" w="100vw" overflowX={"hidden"}>
-                <Box position={"absolute"} top={"5"} right={"5"}>
-                    <ToggleTheme />
-                </Box>
+                <Navbar />
                 <Container maxW={'3xl'}>
                     <Stack
                         as={Box}
                         textAlign={'center'}
                         align={'center'}
-                        spacing={{ base: 8, md: 14 }}
-                        py={{ base: 20, md: 36 }}>
+                        spacing={{ base: 8, md: 8 }}
+                        py={{ base: 10, md: 24 }}
+                        mb={{ base: 10, md: 24 }}
+                    >
                         <Heading
                             fontWeight={"bold"}
-                            fontSize={{ base: '4xl', sm: '6xl', md: '7xl' }}
+                            fontSize={{ base: '5xl', sm: '6xl', md: '7xl' }}
                             lineHeight={'110%'}>
-                            Make money from <br />
-                            <Text as={'span'} color={'green.400'}>
-                                your audience
+                            Join Forces <br />
+                            <Text as={'span'} color={'red.400'}>
+                                Unleash Innovation
                             </Text>
                         </Heading>
-                        <Text color={'gray.400'}>
-                            Monetize your content by charging your most loyal readers and reward
-                            them loyalty points. Give back to your loyal readers by granting
-                            them access to your pre-releases and sneak-peaks.
+                        <Text
+                            color={'gray.400'}
+                            maxW={'3xl'}
+                            fontSize={{ base: 'sm', lg: 'lg' }}
+                        >
+                            Unlock new revenue streams and engage your dedicated audience. With our platform, you can monetize your content by offering exclusive access to your most loyal readers. Charge for premium content, while also rewarding their loyalty with access to pre-releases and sneak peeks. It's a win-win for both you and your dedicated supporters.
                         </Text>
                         <Stack spacing={6} direction={'row'}>
                             <Button
                                 rounded={'full'}
                                 px={6}
-                                colorScheme={'green'}
-                                bg={'green.400'}
-                                _hover={{ bg: 'green.500' }}>
+                                colorScheme={'red'}
+                                bg={'red.400'}
+                                _hover={{ bg: 'red.500' }}>
                                 Get started
                             </Button>
                             <Button rounded={'full'} px={6}>
@@ -81,7 +84,8 @@ const Home = () => {
                                         left: 0,
                                         bg: 'red.400',
                                         zIndex: -1,
-                                    }}>
+                                    }}
+                                >
                                     Write once,
                                 </Text>
                                 <br />
