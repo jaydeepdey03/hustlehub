@@ -48,20 +48,14 @@ export default function Register() {
   return (
     <Flex
       h={'100vh'}
-      overflow={"hidden"}
+      overflowX={"hidden"}
       w={'100vw'}
-      align={'center'}
-      justify={'center'}
+      // mt="32"
+      alignItems={'center'}
+      justifyContent={'center'}
       bg={useColorModeValue('gray.50', 'gray.800')}>
       <Stack spacing={8} mx={'auto'} maxW={'lg'} py={12} px={6}>
-        <Stack align={'center'}>
-          <Heading fontSize={'4xl'} textAlign={'center'}>
-            Sign up
-          </Heading>
-          <Text fontSize={'lg'} color={'gray.600'}>
-            to enjoy all of our cool features ✌️
-          </Text>
-        </Stack>
+        <Heading textAlign={"center"} fontSize={'4xl'}>Sign up for an account</Heading>
         <Box
           rounded={'lg'}
           bg={useColorModeValue('white', 'gray.700')}
@@ -82,7 +76,6 @@ export default function Register() {
             })}
             onSubmit={(value, action) => {
               Register(value.firstName, value.lastName, value.email, value.password)
-              console.log(value)
               action.resetForm()
             }}
           >

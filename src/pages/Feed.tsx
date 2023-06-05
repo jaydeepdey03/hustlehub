@@ -1,18 +1,34 @@
 import { useEffect, useState } from "react"
-import { SDK } from "../appwrite/appwrite-config"
-import { Avatar, Box, Button, Card, CardBody, CardFooter, HStack, Heading, Image, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Stack, Tab, TabIndicator, TabList, TabPanel, TabPanels, Tabs, Text, VStack, useDisclosure, useToast } from "@chakra-ui/react"
+import { DB, SDK } from "../appwrite/appwrite-config"
+import { Box, Stack, Tab, TabIndicator, TabList, TabPanel, TabPanels, Tabs, useDisclosure, useToast } from "@chakra-ui/react"
 import { useNavigate } from "react-router-dom"
 import Navbar from "../components/Navbar"
 import '../App.css'
-import Milestones from "../components/Startup/Milestone"
+import Startupcard from "../components/Startup/Startupcard"
+import Hackathoncard from "../components/hackathon/Hackathoncard"
+
+
 const Feed = () => {
     const navigate = useNavigate()
     const toast = useToast()
     const [details, setDetails] = useState({} as any)
-    const learnMoreDisclosure = useDisclosure()
-
+    const [role, setRole] = useState('' as any)
+    const [startupCollection, setStartupCollection] = useState([] as any)
+    const [joinLoading, setJoinLoading] = useState(false)
+    const startupDisclosure = useDisclosure();
     useEffect(() => {
-        SDK.get().then(res => setDetails(res)).catch(() => {
+        SDK.get().then(res => {
+            setDetails(res)
+            // fetch user document and assign role
+            DB.getDocument('646cfa393629aedbd58f', '646edbd8de898ccf87c5', res.$id).then(result => {
+                setRole(result.role)
+            }).catch(err => console.log(err))
+
+            // fetch collections
+            DB.listDocuments('646cfa393629aedbd58f', '646cfa7aa01148c42ebf').then(res => {
+                setStartupCollection(res.documents)
+            }).catch(err => console.log(err))
+        }).catch(() => {
             toast({
                 title: "An error occurred.",
                 description: "You are not logged in.",
@@ -24,48 +40,25 @@ const Feed = () => {
         })
     }, [])
 
+    const joinStartup = (userId: string, documentId: string) => {
+        setJoinLoading(true)
+        DB.updateDocument('646cfa393629aedbd58f', '646cfa7aa01148c42ebf', documentId, {
+            cofounder: userId
+        }).then(() => {
+        }).catch(err => console.log(err)).finally(() => {
+            setJoinLoading(false)
+        })
+    }
+
     return (
         <>
             {/* Modal */}
-            <Modal onClose={learnMoreDisclosure.onClose} size={"xl"} isOpen={learnMoreDisclosure.isOpen} isCentered scrollBehavior="inside">
-                <ModalOverlay />
-                <ModalContent>
-                    <ModalHeader>Startup Name</ModalHeader>
-                    <ModalCloseButton />
-                    <ModalBody>
-                        <Stack spacing={4}>
-
-                            <Stack>
-                                <Text fontWeight={"bold"} fontSize={"md"}>Startup idea</Text>
-                                <Text>
-                                    Coffee latte is a coffee beverage of Italian origin made with espresso and steamed milk. The word comes from the Italian caffè e latte [kafˌfɛ e lˈlatte], caffelatte [kaffeˈlatte] or caffellatte [kaffelˈlatte]. Caffè latte is often served in a large cup.
-                                </Text>
-                            </Stack>
-                            <HStack>
-                                <Avatar size={"sm"} name={"John Doe"} src={"https://bit.ly/dan-abramov"} />
-                                <Text fontSize={"sm"} color="gray">John Doe</Text>
-                            </HStack>
-
-                            <Stack spacing={"5"}>
-                                <Text m="1" fontWeight={"semibold"} fontSize={"md"}>Milestones</Text>
-                                <Milestones />
-                            </Stack>
-                        </Stack>
-                    </ModalBody>
-                    <ModalFooter justifyContent={"space-between"}>
-                        <Button colorScheme="telegram">Join</Button>
-                        <Button colorScheme="telegram">Fund</Button>
-                        <Button onClick={learnMoreDisclosure.onClose}>Close</Button>
-                    </ModalFooter>
-                </ModalContent>
-            </Modal>
-
             <Box h="100vh" w="100vw" overflowY={"overlay" as any} boxSizing="border-box">
                 <Navbar />
                 {/* <p>{details.name}</p>
             <p>{details.email}</p> */}
 
-                <Box maxW={{base: "100vw", lg: "65vw"}} m={"auto"} p="6">
+                <Box m={"auto"} p="6" w={{ base: "100vw", lg: "65vw" }}>
                     <Tabs position="relative" variant="unstyled" isFitted isLazy>
                         <TabList>
                             <Tab _focus={{ outline: 'none' }} _hover={{ outline: 'none' }}>Startups</Tab>
@@ -81,48 +74,18 @@ const Feed = () => {
                             <TabPanel>
                                 <Stack spacing={'5'}>
                                     {
-                                        [1, 2, 3, 4].map((_, index) => {
+                                        startupCollection.map((document: any, index: number) => {
                                             return (
                                                 <>
-                                                    <Card
+                                                    <Startupcard
                                                         key={index}
-                                                        direction={{ base: 'column', sm: 'row' }}
-                                                        overflow='hidden'
-                                                        variant='outline'
-                                                    >
-                                                        <Image
-                                                            objectFit='cover'
-                                                            maxW={{ base: '100%', sm: '200px' }}
-                                                            m="4"
-                                                            src='https://images.unsplash.com/photo-1667489022797-ab608913feeb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHw5fHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=800&q=60'
-                                                            alt='Caffe Latte'
-                                                        />
-
-                                                        <Stack>
-                                                            <CardBody>
-                                                                <Stack>
-                                                                    <Heading size='md'>The perfect latte</Heading>
-                                                                    <Box alignItems={"center"}>
-                                                                        <Text fontSize={"sm"}>Startup Idea</Text>
-                                                                        <Text fontSize="md" noOfLines={4}>
-                                                                            Caffè latte is a coffee beverage of Italian origin made with espresso and steamed milk. The word comes from the Italian caffè e latte [kafˌfɛ e lˈlatte], caffelatte [kaffeˈlatte] or caffellatte [kaffelˈlatte]. Caffè latte is often served in a large cup.
-                                                                        </Text>
-                                                                    </Box>
-                                                                </Stack>
-                                                            </CardBody>
-
-                                                            <CardFooter justifyContent={"space-between"}>
-                                                                <Button variant='solid' colorScheme='telegram' size="sm">
-                                                                    Join Startup
-                                                                </Button>
-                                                                <Button
-                                                                    onClick={learnMoreDisclosure.onOpen}
-                                                                    variant='solid' colorScheme='telegram' size="sm">
-                                                                    Learn More
-                                                                </Button>
-                                                            </CardFooter>
-                                                        </Stack>
-                                                    </Card>
+                                                        document={document}
+                                                        details={details}
+                                                        role={role}
+                                                        joinStartup={joinStartup}
+                                                        index={index}
+                                                        joinLoading={joinLoading}
+                                                    />
                                                 </>
                                             )
                                         })
@@ -131,7 +94,7 @@ const Feed = () => {
 
                             </TabPanel>
                             <TabPanel>
-                                <p>two!</p>
+                                <Hackathoncard />
                             </TabPanel>
                         </TabPanels>
                     </Tabs>
@@ -140,5 +103,6 @@ const Feed = () => {
         </>
     )
 }
+
 
 export default Feed
