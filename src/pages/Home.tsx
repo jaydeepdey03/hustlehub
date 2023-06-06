@@ -35,7 +35,7 @@ const Home = () => {
                             fontSize={{ base: '5xl', sm: '6xl', md: '7xl' }}
                             lineHeight={'110%'}>
                             Join Forces <br />
-                            <Text as={'span'} color={'green.400'}>
+                            <Text as={'span'} color={'red.400'}>
                                 Unleash Innovation
                             </Text>
                         </Heading>
@@ -50,9 +50,9 @@ const Home = () => {
                             <Button
                                 rounded={'full'}
                                 px={6}
-                                colorScheme={'green'}
-                                bg={'green.400'}
-                                _hover={{ bg: 'green.500' }}>
+                                colorScheme={'red'}
+                                bg={'red.400'}
+                                _hover={{ bg: 'red.500' }}>
                                 Get started
                             </Button>
                             <Button rounded={'full'} px={6}>
@@ -82,14 +82,14 @@ const Home = () => {
                                         position: 'absolute',
                                         bottom: 1,
                                         left: 0,
-                                        bg: 'green.400',
+                                        bg: 'red.400',
                                         zIndex: -1,
                                     }}
                                 >
                                     Write once,
                                 </Text>
                                 <br />
-                                <Text as={'span'} color={'green.400'}>
+                                <Text as={'span'} color={'red.400'}>
                                     use everywhere!
                                 </Text>
                             </Heading>
@@ -106,9 +106,9 @@ const Home = () => {
                                     size={'lg'}
                                     fontWeight={'normal'}
                                     px={6}
-                                    colorScheme={'green'}
-                                    bg={'green.400'}
-                                    _hover={{ bg: 'green.500' }}>
+                                    colorScheme={'red'}
+                                    bg={'red.400'}
+                                    _hover={{ bg: 'red.500' }}>
                                     Get started
                                 </Button>
                                 <Button
@@ -134,7 +134,7 @@ const Home = () => {
                                 top={'-20%'}
                                 left={0}
                                 zIndex={-1}
-                                color={useColorModeValue('green.50', 'green.400')}
+                                color={useColorModeValue('red.50', 'red.400')}
                             />
                             <Box
                                 position={'relative'}
@@ -143,18 +143,6 @@ const Home = () => {
                                 boxShadow={'2xl'}
                                 width={'full'}
                                 overflow={'hidden'}>
-                                <IconButton
-                                    aria-label={'Play Button'}
-                                    variant={'ghost'}
-                                    _hover={{ bg: 'transparent' }}
-                                    icon={<PlayIcon w={12} h={12} />}
-                                    size={'lg'}
-                                    color={'white'}
-                                    position={'absolute'}
-                                    left={'50%'}
-                                    top={'50%'}
-                                    transform={'translateX(-50%) translateY(-50%)'}
-                                />
                                 <Image
                                     alt={'Hero Image'}
                                     fit={'cover'}

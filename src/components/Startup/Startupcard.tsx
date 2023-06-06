@@ -30,6 +30,7 @@ const Startupcard = (props: any) => {
         }).catch(err => console.log(err))
     }
 
+    console.log(document, 'startup card')
     return (
         <>
             <Box key={index}>
@@ -71,7 +72,7 @@ const Startupcard = (props: any) => {
 
                                 <Stack spacing={"5"}>
                                     <Text m="1" fontWeight={"semibold"} fontSize={"md"}>Milestones</Text>
-                                    <Milestones />
+                                    <Milestones milestoneArray={document.milestones} />
                                 </Stack>
                             </Stack>
                         </ModalBody>
@@ -176,12 +177,12 @@ const Startupcard = (props: any) => {
 
                             onSubmit={(value, action) => {
                                 // add data to appwrite database
-                                UpDateStartup(
-                                    value.title,
-                                    value.description,
-                                    value.image,
-                                    value.milestone
-                                )
+                                // UpDateStartup(
+                                //     value.title,
+                                //     value.description,
+                                //     value.image,
+                                //     value.milestone
+                                // )
                                 console.log(value, 'updated form')
                                 action.resetForm()
                             }}
@@ -269,7 +270,7 @@ const Startupcard = (props: any) => {
                                                                                 ml={2}
                                                                             />
                                                                         </Flex>
-                                                                        <FormErrorMessage>{formik.errors.milestone?.[index]}</FormErrorMessage>
+                                                                    <FormErrorMessage>{formik.errors.milestone?.[index]}</FormErrorMessage>
                                                                     </FormControl>
                                                                 </Box>
                                                             ))}
