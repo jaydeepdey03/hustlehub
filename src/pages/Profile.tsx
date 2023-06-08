@@ -8,7 +8,7 @@ import {
     Text,
     Stack,
     chakra,
-    Link as ChakraLink, Tab, TabList, TabPanel, TabPanels, Tabs, VStack, Divider, Icon, Grid, HStack, useColorModeValue, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, FormControl, FormLabel, Input, FormErrorMessage, Textarea, FormHelperText, IconButton, Button, ModalFooter, useDisclosure
+    Link as ChakraLink, Tab, TabList, TabPanel, TabPanels, Tabs, VStack, Divider, Icon, Grid, HStack, useColorModeValue, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, FormControl, FormLabel, Input, FormErrorMessage, Textarea, FormHelperText, IconButton, Button, ModalFooter, useDisclosure, useToast
 } from '@chakra-ui/react';
 import Navbar from '../components/Navbar';
 import { Link, useLocation } from 'react-router-dom';
@@ -73,11 +73,16 @@ function Profile() {
     const [userHackathon, setUserHackathon] = useState([] as any)
     const [user, setUser] = useState({} as any)
     const updateDisclosure = useDisclosure()
+    const toast = useToast()
+    const [updateStartupLoading, setUpdateStartupLoading] = useState(false)
 
     const UpdateStartup = (title: string, description: string, image: File, milestone: string[]) => {
+        setUpdateStartupLoading(true)
         storage.createFile("647a464fabf94fdc2ebf", ID.unique(), image).then(res => {
             const url = storage.getFilePreview("647a464fabf94fdc2ebf", res.$id)
-            DB.updateDocument('646cfa393629aedbd58f', '646cfa7aa01148c42ebf', document.$id, {
+            DB.updateDocument('646cfa393629aedbd58f', '646cfa7aa01148c42ebf', 
+            location.state.documentId
+            , {
                 title,
                 idea: description,
                 image: url,
@@ -85,8 +90,26 @@ function Profile() {
             }).then((res1) => {
                 updateDisclosure.onClose()
                 console.log("updated startup", res1)
-            }).catch(err => console.log(err, 'err at update doc'))
-        }).catch(err1 => console.log('err at create file', err1))
+            }).catch(err => {
+                console.log(err)
+                toast({
+                    title: "Error",
+                    description: "Error updating startup",
+                    status: "error",
+                    duration: 9000,
+                    isClosable: true,
+                })
+            })
+        }).catch(err1 => {
+            console.log(err1)
+            toast({
+                title: "Error",
+                description: "Error uploading image",
+                status: "error",
+                duration: 9000,
+                isClosable: true,
+            })
+        }).finally(() => setUpdateStartupLoading(false))
     }
 
     useEffect(() => {
@@ -96,8 +119,26 @@ function Profile() {
             DB.listDocuments('646cfa393629aedbd58f', '646cfa7aa01148c42ebf').then(res1 => {
                 // set array of startups who founder is this user
                 setUserStartup(res1.documents.filter((startup: any) => startup.founder === res.$id))
-            }).catch(err => console.log(err))
-        }).catch(err => console.log(err))
+            }).catch(err => {
+                console.log(err)
+                toast({
+                    title: "Error",
+                    description: "Error fetching startups",
+                    status: "error",
+                    duration: 9000,
+                    isClosable: true,
+                })
+            })
+        }).catch(err => {
+            console.log(err)
+            toast({
+                title: "Error",
+                description: "Error fetching user",
+                status: "error",
+                duration: 9000,
+                isClosable: true,
+            })
+        })
     }, [location])
 
     useEffect(() => {
@@ -116,12 +157,12 @@ function Profile() {
     return (
         <>
             <Navbar />
-            <Stack width={"80%"} m="auto" direction={{ base: 'column', md: 'row' }} p={"6"} spacing={"10"} justifyContent={"center"}>
+            <Stack width={"80%"} m="auto" direction={{ base: 'column', lg: 'row' }} p={"6"} spacing={"10"} justifyContent={"center"}>
 
 
                 <VStack
                     h="100%"
-                    w={{ base: "100%", md: "30%" }}
+                    w={{ base: "100%", lg: "30%" }}
                     rounded={"xl"}
                     border={"1px solid"}
                     borderColor={useColorModeValue('gray.200', 'gray.700')}
@@ -133,13 +174,19 @@ function Profile() {
                         mt="5"
                     />
                     <Text
-                        bgGradient='linear(to-l, #7928CA, #FF0080)'
-                        bgClip='text'
-                        fontSize='3xl'
-                        fontWeight='extrabold'
+                        bgGradient="linear(to-r, red.500, purple.500)"
+                        bgClip="text"
+                        fontSize="3xl"
+                        fontWeight="extrabold"
+                    // color={'purpi'}
                     >
                         {user.name}
                     </Text>
+                    In this code, the bgGradient property specifies a linear gradient from a light red shade (#FFDADA) to a slightly darker red
+
+
+
+
                     <Divider w="80%" m="auto" />
                     <HStack spacing={"4"}>
                         {/* <Profilecard userId={startup.founder} created={true} /> */}
@@ -156,7 +203,7 @@ function Profile() {
 
                 <VStack
                     alignItems={"flex-start"}
-                    w="70%"
+                    w={{ base: "100%", lg: "70%" }}
                     h="60vh"
                     border={"1px solid"}
                     borderColor={'gray.200'}
@@ -175,6 +222,14 @@ function Profile() {
                                         Your Startups
                                     </chakra.h3> */}
                                 </Flex>
+                                {
+                                    userStartup.length === 0 &&
+                                    <VStack borderColor="gray.400" rounded="md" overflow="hidden" spacing={2}>
+                                        <Text textAlign={"center"} fontSize={"xs"}>
+                                            You have not created any startup yet
+                                        </Text>
+                                    </VStack>
+                                }
                                 <VStack rounded="md" overflow="hidden" spacing={0}>
                                     {userStartup.map((startup: any, index: number) => (
                                         <Fragment key={index}>
@@ -238,6 +293,8 @@ function Profile() {
                                             {/* {articles.length - 1 !== index && <Divider m={0} />} */}
                                             <UpdateStartupModal document={startup}
                                                 updateDisclosure={updateDisclosure}
+                                                UpdateStartup={UpdateStartup}
+                                                updateStartupLoading={updateStartupLoading}
                                             />
                                         </Fragment>
                                     ))}
@@ -252,8 +309,16 @@ function Profile() {
                                         Your Hackathons
                                     </chakra.h3> */}
                                 </Flex>
+                                {
+                                    userHackathon.length === 0 &&
+                                    <VStack borderColor="gray.400" rounded="md" overflow="hidden" spacing={2}>
+                                        <Text textAlign={"center"} fontSize={"xs"}>
+                                            You have not created any hackathon yet
+                                        </Text>
+                                    </VStack>
+                                }
                                 <VStack borderColor="gray.400" rounded="md" overflow="hidden" spacing={2}>
-                                    {userHackathon.map((hackathon:any, index:number) => (
+                                    {userHackathon.map((hackathon: any, index: number) => (
                                         <Fragment key={index}>
                                             <Grid
                                                 templateRows={{ base: 'auto auto', md: 'auto' }}
@@ -325,29 +390,5 @@ function Profile() {
         </>
     );
 }
-
-const ArticleStat = ({ icon, value }: { icon: IconType; value: number }) => {
-    return (
-        <Flex p={1} alignItems="center">
-            <Icon as={icon} w={5} h={5} mr={2} />
-            <chakra.span> {value} </chakra.span>
-        </Flex>
-    );
-};
-
-
-const ArticleSettingLink = ({ label }: { label: string }) => {
-    return (
-        <chakra.p
-            as={Link}
-            _hover={{ bg: useColorModeValue('gray.400', 'gray.600') }}
-            p={1}
-            rounded="md"
-        >
-            {label}
-        </chakra.p>
-    );
-};
-
 
 export default Profile;

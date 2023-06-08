@@ -12,6 +12,7 @@ import {
     Button,
     Tag,
     TagLabel,
+    chakra,
     HStack,
     Modal,
     ModalOverlay,
@@ -22,6 +23,8 @@ import {
     ModalFooter,
     useDisclosure,
 } from '@chakra-ui/react';
+import Profilecard from '../../pages/Profilecard';
+import { Link } from 'react-router-dom';
 const Hackathoncard = (props: any) => {
     const { document, details, role } = props
     const hackathonDisclosure = useDisclosure()
@@ -42,13 +45,13 @@ const Hackathoncard = (props: any) => {
                         // width={'30%'}
                         width={{ base: "100%", md: "30%" }}
                         p="3"
-                        src={
+                        src={document.image ? document.image :
                             'https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80'
                         }
                         // fill
                         objectFit={'cover'}
                     />
-                    <Stack p="6" spacing={6}>
+                    <Stack p="6" spacing={6} w="100%">
                         <Stack>
                             <Heading
                                 color={useColorModeValue('gray.700', 'white')}
@@ -65,32 +68,45 @@ const Hackathoncard = (props: any) => {
                                 </Box>
                             </Box>
                         </Stack>
-                        <Stack mt={6} direction={'row'} spacing={4} align={'center'}>
+                        {/* <Stack mt={6} direction={'row'} spacing={4} align={'center'}>
                             <Avatar
                                 src={'https://avatars0.githubusercontent.com/u/1164541?v=4'}
                                 name={'Author'}
                             />
                             <Stack direction={'column'} spacing={0} fontSize={'sm'}>
-                            <Text fontSize={"xs"} fontWeight={300}>Created by</Text>
+                                <Text fontSize={"xs"} fontWeight={300}>Created by</Text>
                                 <Text fontWeight={600}>Achim Rolle</Text>
                                 <Text color={'gray.500'}>Feb 08, 2021 · 6min read</Text>
                             </Stack>
-                        </Stack>
+                            
+                        </Stack> */}
+                        <Profilecard userId={document.creator} created={true} details={true} />
                         <Flex justifyContent={"space-between"}>
                             <Stack spacing={3}>
-                                <Text fontWeight={600} fontSize="xs">Participants</Text>
-                                <AvatarGroup size='sm' max={3}>
-                                    <Avatar name='Ryan Florence' src='https://bit.ly/ryan-florence' />
-                                    <Avatar name='Segun Adebayo' src='https://bit.ly/sage-adebayo' />
-                                    <Avatar name='Kent Dodds' src='https://bit.ly/kent-c-dodds' />
-                                    <Avatar name='Prosper Otemuyiwa' src='https://bit.ly/prosper-baba' />
-                                    <Avatar name='Christian Nwamba' src='https://bit.ly/code-beast' />
-                                </AvatarGroup>
+                                <Text fontWeight={600} fontSize="xs">Participants {" "}
+                                    <chakra.span fontWeight={"normal"}>(Max: {document.noOfMembers})</chakra.span>
+                                </Text>
+
+                                {
+                                    document.members.length !== 0 ? (
+                                        <AvatarGroup size="sm" max={3}>
+                                            {document?.members?.map((member: any) => (
+                                                <Profilecard userId={member} created={false} details={false} key={member} />
+                                            ))}
+                                        </AvatarGroup>
+                                    ) : (
+                                        <Text fontSize="sm" color={useColorModeValue("gray", "white")}>
+                                            No Participants yet
+                                        </Text>
+                                    )
+                                }
+
                             </Stack>
                             {/* Button */}
                             <Flex mt="6" alignItems={"center"}>
                                 <Button colorScheme='telegram' size={"sm"}
-                                    onClick={hackathonDisclosure.onOpen}
+                                    as={Link} to={`/hackathon/${document.$id}`}
+                                    state={{ documentId: document.$id }}
                                 >Learn More</Button>
                             </Flex>
                         </Flex>
@@ -105,7 +121,6 @@ const Hackathoncard = (props: any) => {
                     <ModalCloseButton />
                     <ModalBody>
                         <Stack spacing={4}>
-
                             <Stack>
                                 <Text fontWeight={"bold"} fontSize={"md"}>{document.title}</Text>
                                 <Text>

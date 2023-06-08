@@ -3,8 +3,8 @@ import { Box, Button, Flex, FormControl, FormErrorMessage, FormHelperText, FormL
 import { Field, FieldArray, Formik } from "formik"
 import * as Yup from 'yup'
 
-const UpdateStartupModal = (props:any) => {
-    const { document, updateDisclosure } = props
+const UpdateStartupModal = (props: any) => {
+    const { document, updateDisclosure, UpdateStartup, updateStartupLoading } = props
     return (
         <Modal onClose={updateDisclosure.onClose} size={"xl"} isOpen={updateDisclosure.isOpen}>
             <ModalOverlay />
@@ -16,24 +16,26 @@ const UpdateStartupModal = (props:any) => {
                         initialValues={{
                             title: document.title || '',
                             description: document.idea || '',
-                            image: document.image || '',
+                            // image file obj should be empty
+                            image: '',
                             milestone: document.milestones || [],
                         }}
                         validationSchema={Yup.object({
                             title: Yup.string().required('Title is required'),
                             description: Yup.string().required('Description is required'),
-                            image: Yup.string().required('Image is required'),
+                            // image is a file obj
+                            image: Yup.mixed().required('Image is required'),
                             milestone: Yup.array().of(Yup.string().required('Milestone is required')),
                         })}
 
                         onSubmit={(value, action) => {
                             // add data to appwrite database
-                            // UpdateStartup(
-                            //     value.title,
-                            //     value.description,
-                            //     value.image,
-                            //     value.milestone
-                            // )
+                            UpdateStartup(
+                                value.title,
+                                value.description,
+                                value.image,
+                                value.milestone
+                            )
                             console.log(value, 'updated form')
                             action.resetForm()
                         }}
@@ -138,7 +140,7 @@ const UpdateStartupModal = (props:any) => {
                                 </Stack>
                                 <ModalFooter pr="0">
                                     <Button
-                                        // isLoading={startupLoading}
+                                        isLoading={updateStartupLoading}
                                         loadingText="Submitting..."
                                         colorScheme='linkedin' type="submit">Submit</Button>
                                 </ModalFooter>

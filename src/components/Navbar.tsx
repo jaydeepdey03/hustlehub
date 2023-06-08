@@ -35,6 +35,7 @@ import {
     FormErrorMessage,
     Image,
     Text,
+    useToast,
 } from '@chakra-ui/react';
 import {
     HamburgerIcon,
@@ -44,7 +45,7 @@ import {
 } from '@chakra-ui/icons';
 import ToggleTheme from './Toggletheme';
 import useGlobalState from '../hooks/useGlobalState';
-import { DB, SDK } from '../appwrite/appwrite-config';
+import { DB, SDK, storage } from '../appwrite/appwrite-config';
 import { Link, useLocation } from 'react-router-dom';
 import { Field, FieldArray, Formik } from 'formik';
 import * as Yup from 'yup';
@@ -82,6 +83,8 @@ const Navbar = () => {
     // console.log(location, 'location')
     const [role, setRole] = useState('' as any)
     const [startupLoading, setStartupLoading] = useState(false)
+    const toast = useToast()
+
 
     useEffect(() => {
         SDK.get().then((res) => {
@@ -94,56 +97,112 @@ const Navbar = () => {
         })
     }, [])
 
-    const AddNewStartup = async (title: string, description: string, milestones: string[] | any) => {
+    const AddNewStartup = async (title: string, description: string, image: any, milestones: string[] | any) => {
         setStartupLoading(true)
-        DB.createDocument("646cfa393629aedbd58f", "646cfa7aa01148c42ebf", ID.unique(), {
-            title: title,
-            idea: description,
-            // image: image,
-            founder: data.$id,
-        }).then(res => {
-            DB.listDocuments("646cfa393629aedbd58f", "646cfa7aa01148c42ebf")
-                .then((res) => {
-                    // Update the startup collection state with the fetched data
-                    // setStartupCollection(res.documents);
+        storage.createFile("647a464fabf94fdc2ebf", ID.unique(), image).then(res => {
+            const url = storage.getFilePreview("647a464fabf94fdc2ebf", res.$id)
+            DB.createDocument("646cfa393629aedbd58f", "646cfa7aa01148c42ebf", ID.unique(), {
+                title: title,
+                idea: description,
+                image: url,
+                founder: data.$id,
+                milestones: milestones,
+            }).then(res1 => {
+                startupDisclosure.onClose()
+                DB.listDocuments("646cfa393629aedbd58f", "646cfa7aa01148c42ebf")
+                    .then((res2) => {
+                        // Update the startup collection state with the fetched data
+                        // setStartupCollection(res.documents);
+                    })
+                    .catch((err2) => {
+                        console.log(err2);
+                        toast({
+                            title: "Error",
+                            description: err2.message,
+                            status: "error",
+                            duration: 9000,
+                            isClosable: true,
+                        })
+                    });
+            }).catch((err1: unknown) => {
+                const appwriteexception = err1 as AppwriteException
+                console.log(appwriteexception.message)
+                toast({
+                    title: "Error",
+                    description: appwriteexception.message,
+                    status: "error",
+                    duration: 9000,
+                    isClosable: true,
                 })
-                .catch((err) => {
-                    console.log(err);
-                    startupDisclosure.onClose()
-                });
-        }).catch((err: unknown) => {
-            const appwriteexception = err as AppwriteException
-            console.log(appwriteexception.message)
+            })
+        }).catch(err2 => {
+            console.log(err2)
+            toast({
+                title: "Error",
+                description: err2.message,
+                status: "error",
+                duration: 9000,
+                isClosable: true,
+            })
         }).finally(() => {
             setStartupLoading(false)
         })
     }
 
     const [hackathonLoading, setHackathonLoading] = useState(false)
-    const createNewHackathon = async (title: string, idea: string, image: string, noOfMembers: number) => {
+
+    const createNewHackathon = async (title: string, idea: string, image: any, noOfMembers: number, link:string) => {
         setHackathonLoading(true)
-        DB.createDocument("646cfa393629aedbd58f", "646ed5510d2cb68ff19f", ID.unique(), {
-            title: title,
-            idea: idea,
-            // image: image,
-            noOfMembers: noOfMembers,
-            creator: data.$id,
-        }).then(res => {
-            DB.listDocuments("646cfa393629aedbd58f", "646ed5510d2cb68ff19f")
-                .then((res) => {
-                    // Update the startup collection state with the fetched data
-                    // setStartupCollection(res.documents);
-                    HackathonDisclosure.onClose()
+        storage.createFile("647a464fabf94fdc2ebf", ID.unique(), image).then(res => {
+            const url = storage.getFilePreview("647a464fabf94fdc2ebf", res.$id)
+            DB.createDocument("646cfa393629aedbd58f", "646ed5510d2cb68ff19f", ID.unique(), {
+                title: title,
+                idea: idea,
+                image: url,
+                noOfMembers: noOfMembers,
+                creator: data.$id,
+                link: link,
+            }).then(res => {
+                HackathonDisclosure.onClose()
+                DB.listDocuments("646cfa393629aedbd58f", "646ed5510d2cb68ff19f")
+                    .then((res) => {
+                        // Update the startup collection state with the fetched data
+                        // setStartupCollection(res.documents);
+                    })
+                    .catch((err) => {
+                        console.log(err);
+                        toast({
+                            title: "Error",
+                            description: err.message,
+                            status: "error",
+                            duration: 9000,
+                            isClosable: true,
+                        })
+                    });
+            }).catch((err: unknown) => {
+                const appwriteexception = err as AppwriteException
+                toast({
+                    title: "Error",
+                    description: appwriteexception.message,
+                    status: "error",
+                    duration: 9000,
+                    isClosable: true,
                 })
-                .catch((err) => {
-                    console.log(err);
-                    HackathonDisclosure.onClose()
-                });
-        }).catch((err: unknown) => {
-            const appwriteexception = err as AppwriteException
-            console.log(appwriteexception.message)
+                console.log(appwriteexception.message)
+            }).finally(() => {
+                setHackathonLoading(false)
+            })
+        }).catch(err2 => {
+            console.log(err2)
+            toast({
+                title: "Error",
+                description: err2.message,
+                status: "error",
+                duration: 9000,
+                isClosable: true,
+            })
         }).finally(() => {
-            setHackathonLoading(false)
+            setStartupLoading(false)
         })
     }
 
@@ -166,17 +225,18 @@ const Navbar = () => {
                             validationSchema={Yup.object({
                                 title: Yup.string().required('Title is required'),
                                 description: Yup.string().required('Description is required'),
-                                image: Yup.string().required('Image is required'),
+                                image: Yup.mixed().required('Image is required'),
                             })}
 
                             onSubmit={(value, action) => {
                                 // add data to appwrite database
-                                // AddNewStartup(
-                                //     value.title,
-                                //     value.description,
-                                // )
+                                AddNewStartup(
+                                    value.title,
+                                    value.description,
+                                    value.image,
+                                    value.milestone
+                                )
                                 console.log(value, 'startup form')
-                                action.resetForm()
                             }}
                         >
                             {(formik) => (
@@ -215,6 +275,7 @@ const Navbar = () => {
                                             >
                                                 <FormLabel>Files</FormLabel>
                                                 <Input
+                                                    id="uploader"
                                                     accept="image/*"
                                                     type="file"
                                                     sx={{
@@ -227,7 +288,12 @@ const Navbar = () => {
                                                             fontWeight: "bold",
                                                         },
                                                     }}
-                                                    {...formik.getFieldProps('image')}
+                                                    onChange={(e) => {
+                                                        const file = e.target.files?.[0];
+                                                        formik.setFieldValue('image', file);
+                                                    }}
+                                                    onBlur={formik.handleBlur('image')}
+                                                    isInvalid={Boolean(formik.errors.image && formik.touched.image)}
                                                 />
                                                 <FormHelperText>Any logo of startup</FormHelperText>
                                             </FormControl>
@@ -293,12 +359,14 @@ const Navbar = () => {
                             idea: '',
                             image: '',
                             noOfMembers: 0,
+                            link: '',
                         }}
                         validationSchema={Yup.object({
                             title: Yup.string().required('Title is required'),
                             idea: Yup.string().required('Description is required'),
                             image: Yup.string().required('Image is required'),
                             noOfMembers: Yup.number().required('Number of members is required'),
+                            link: Yup.string().required('Link is required'),
                         })}
 
                         onSubmit={(value, action) => {
@@ -307,7 +375,8 @@ const Navbar = () => {
                                 value.title,
                                 value.idea,
                                 value.image,
-                                value.noOfMembers
+                                value.noOfMembers,
+                                value.link
                             )
                             console.log(value, 'hackathon form')
                             action.resetForm()
@@ -329,7 +398,7 @@ const Navbar = () => {
                                                 </FormControl>
 
                                                 <FormControl id="idea" isInvalid={!!formik.errors.idea && formik.touched.idea}>
-
+                                                    <FormLabel>Idea</FormLabel>
                                                     <Textarea
                                                         placeholder='Hackathon Idea'
                                                         size='sm'
@@ -337,9 +406,20 @@ const Navbar = () => {
                                                     />
                                                     <FormErrorMessage>{formik.errors.idea}</FormErrorMessage>
                                                 </FormControl>
+
+                                                <FormControl id="link" isInvalid={!!formik.errors.link && formik.touched.link}>
+                                                    <FormLabel>Link</FormLabel>
+                                                    <Input type="text"
+                                                        placeholder='Hackathon Link'
+                                                        {...formik.getFieldProps('link')}
+                                                    />
+                                                    <FormErrorMessage>{formik.errors.link}</FormErrorMessage>
+                                                </FormControl>
+
                                                 <FormControl>
                                                     <FormLabel>Files</FormLabel>
                                                     <Input
+                                                        id="uploader"
                                                         accept="image/*"
                                                         type="file"
                                                         sx={{
@@ -352,7 +432,12 @@ const Navbar = () => {
                                                                 fontWeight: "bold",
                                                             },
                                                         }}
-                                                        {...formik.getFieldProps('image')}
+                                                        onChange={(e) => {
+                                                            const file = e.target.files?.[0];
+                                                            formik.setFieldValue('image', file);
+                                                        }}
+                                                        onBlur={formik.handleBlur('image')}
+                                                        isInvalid={Boolean(formik.errors.image && formik.touched.image)}
                                                     />
                                                     <FormErrorMessage>{formik.errors.image}</FormErrorMessage>
                                                     <FormHelperText>Any photo of Hackathon</FormHelperText>
@@ -411,7 +496,13 @@ const Navbar = () => {
                     />
                     <HStack spacing={8} alignItems={'center'}>
                         <HStack spacing="5">
-                            <Text as="b">HustleHub</Text>
+                            {/* <Text as="b">HustleHub</Text> */}
+                            <Link to="/"><Image
+                                src="/logo.png"
+                                alt="logo"
+                                width="8rem"
+                                height="auto"
+                            /></Link>
                             <Image
                                 src="/built-with-appwrite.svg"
                                 alt="logo"

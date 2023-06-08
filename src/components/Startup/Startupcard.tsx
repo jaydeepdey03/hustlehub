@@ -101,36 +101,55 @@ const Startupcard = (props: any) => {
                     <Image
                         objectFit='cover'
                         maxW={{ base: '100%', xl: '200px' }}
+                        maxH={{ base: '200px', xl: '100%' }}
                         m="4"
                         src={document.image != null ? document.image : 'https://images.unsplash.com/photo-1667489022797-ab608913feeb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHw5fHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=800&q=60'}
                         alt='Caffe Latte'
                     />
 
-                    <Stack>
+                    <Stack w="full">
                         <CardBody>
                             <Stack>
                                 <Heading size='md'>{document.title}</Heading>
-                                <Box alignItems={"center"}>
-                                    <Text fontSize={"sm"}>Startup Idea</Text>
-                                    <Text fontSize="md" noOfLines={4} minW={{ base: "xs", md: "lg" }}>
-                                        {document.idea}
-                                    </Text>
+                                <Box minH="7rem" minW={{ base: "xs", md: "lg" }}>
+                                    <Box alignItems={"center"}>
+                                        <Text fontSize={"sm"}>Startup Idea</Text>
+                                        <Text fontSize="md" noOfLines={4} minW={{ base: "xs", md: "lg" }}>
+                                            {document.idea}
+                                        </Text>
+                                    </Box>
                                 </Box>
                             </Stack>
                         </CardBody>
                         <Stack direction={{ base: "column", lg: "row" }} spacing={"10"} pl='4'>
                             <Box>
                                 <Heading mb='3' size='sm' fontWeight={"semibold"}>Founder </Heading>
-                                <Profilecard userId={document.founder} created={false} />
+                                <Profilecard userId={document.founder} created={false} details={true} />
                             </Box>
                             {document.cofounder !== null && <Box>
                                 <Heading mb='3' size='sm' fontWeight={"semibold"}>Co-Founder</Heading>
-                                <Profilecard userId={document.cofounder} created={false} />
+                                <Profilecard userId={document.cofounder} created={false} details={true} />
                             </Box>}
                         </Stack>
 
-                        <CardFooter justifyContent={"end"}>
-                            {role === 'investor' && <Button colorScheme="telegram">Fund</Button>}
+                        <CardFooter justifyContent={"space-between"}>
+                            <Flex direction={"column"}>
+                                <Text fontSize={"xs"} color={useColorModeValue('gray.800', 'gray.400')}>
+                                    Created at
+                                </Text>
+                                <Text
+                                    fontSize={"sm"}
+                                    color={useColorModeValue('gray.800', 'gray.400')}
+                                >
+                                    {new Date(document.$createdAt).toLocaleDateString('en-us', {
+                                        year: 'numeric',
+                                        month: 'long',
+                                        day: 'numeric'
+                                    })  
+                                    }
+                                </Text>
+                            </Flex>
+                            {/* {role === 'investor' && <Button colorScheme="telegram">Fund</Button>} */}
                             <Button
                                 // onClick={learnMoreDisclosure.onOpen}
                                 as={Link}

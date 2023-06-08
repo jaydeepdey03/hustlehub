@@ -31,7 +31,7 @@ const Feed = () => {
 
             // fetch collections
             DB.listDocuments('646cfa393629aedbd58f', '646cfa7aa01148c42ebf').then(res => {
-                setStartupCollection(res.documents)
+                setStartupCollection(res.documents.reverse())
             }).catch(err => console.log(err))
         }).catch(() => {
             toast({
@@ -71,8 +71,8 @@ const Feed = () => {
                 {/* <p>{details.name}</p>
             <p>{details.email}</p> */}
 
-                <Box m={"auto"} p="6" w={{ base: "100vw", lg: "65vw" }}>
-                    <Tabs position="relative" variant="unstyled" isFitted isLazy defaultIndex={0}>
+                <Box m={"auto"} p="6" w={{ base: "100vw", xl: "70vw" }}>
+                    <Tabs position="relative" variant="unstyled" isFitted isLazy defaultIndex={1}>
                         <TabList>
                             <Tab _focus={{ outline: 'none' }} _hover={{ outline: 'none' }}>
                                 <BsRocketTakeoff />

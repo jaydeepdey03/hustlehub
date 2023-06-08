@@ -1,4 +1,4 @@
-import { Box, Heading, Icon, Stack, VStack, useColorModeValue, chakra, Text, HStack, Avatar, Divider, Button } from "@chakra-ui/react"
+import { Box, Heading, Icon, Stack, VStack, useColorModeValue, chakra, Text, HStack, Avatar, Divider, Button, Image } from "@chakra-ui/react"
 import Navbar from "../components/Navbar"
 import { BsRocketTakeoff } from "react-icons/bs"
 import { MdAttachMoney } from "react-icons/md"
@@ -32,19 +32,30 @@ const StartupPage = () => {
     return (
         <>
             <Navbar />
-            <Stack direction={{ base: 'column', md: 'row' }} p={"6"} spacing={"10"} justifyContent={"center"}>
+            <Stack direction={{ base: 'column', lg: 'row' }} p={"6"} spacing={"10"} justifyContent={"center"}>
                 <VStack
                     h="100%"
-                    w={{ base: "100%", md: "30%" }}
+                    w={{ base: "100%", lg: "30%" }}
                     border={"2px solid"}
                     borderColor={'gray.200'}
                     rounded={"xl"}
-                    spacing={{ base: 4, md: 10 }}
+                    spacing={{ base: 4, lg: 10 }}
                 >
-                    <Avatar
+                    {/* <Avatar
                         size="2xl"
                         name="Startup Name"
                         src={startup.image}
+                        mt="5"
+                    /> */}
+                    <Image 
+                        src={startup.image}
+                        alt="Startup Image"
+                        boxSize="90%"
+                        height={{ base: "200px", lg: "90%" }}
+                        objectFit="cover"
+                        // borderRadius="full"
+                        border="2px solid"
+                        borderColor={useColorModeValue('gray.200', 'gray.700')}
                         mt="5"
                     />
                     <Text
@@ -57,7 +68,7 @@ const StartupPage = () => {
                     </Text>
                     <Divider w="80%" m="auto" />
                     <VStack spacing={"10"}>
-                        <Profilecard userId={startup.founder} created={true}/>
+                        <Profilecard userId={startup.founder} created={true} details={true}/>
                     </VStack>
                     <Divider w="80%" m="auto" />
                     {location.state.role === 'investor' && <Button
@@ -115,7 +126,7 @@ const StartupPage = () => {
                 <Stack
                     direction={"column"}
                     h="100%"
-                    w={{ base: "100%", md: "60%" }}
+                    w={{ base: "100%", lg: "60%" }}
                     border={"2px solid"}
                     borderColor={useColorModeValue('gray.200', 'gray.700')}
                     rounded={"xl"}
@@ -138,11 +149,11 @@ const StartupPage = () => {
                                     'white')}>
                                     {startup.founder} {startup.founder === details.$id && '(You)'}</Text>
                             </HStack> */}
-                            <Profilecard userId={startup.founder} created={false} />
+                            <Profilecard userId={startup.founder} created={false} details={true}/>
                         </Box>
                         {startup.cofounder !== null && <Box>
                             <Heading mb='3' size='sm' fontWeight={"semibold"}>Co-Founder</Heading>
-                            <Profilecard userId={startup.cofounder} created={false} />
+                            <Profilecard userId={startup.cofounder} created={false} details={true} />
                         </Box>}
                     </Stack>
                     <Divider width={"100%"} />
