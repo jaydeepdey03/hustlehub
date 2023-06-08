@@ -8,6 +8,8 @@ import Feed from './pages/Feed'
 import ResetPassword from './pages/Resetpassword'
 import { Box } from '@chakra-ui/react'
 import Profile from './pages/Profile'
+import StartupPage from './pages/StartupPage'
+import HackathonPage from './pages/HackathonPage'
 
 function App() {
 
@@ -23,7 +25,9 @@ function App() {
         <Route path="/feed" element={<Feed />} />
         <Route path="/reset" element={<ResetPassword />} />
         <Route path="/forgotpassword" element={<ForgotPassword />} />
-        <Route path="/user/:id" element={<Profile />} />
+        <Route path="/profile/:id" element={<Profile />} />
+        <Route path="/startup/:id" element={<StartupPage />} />
+        <Route path="/hackathon/:id" element={<HackathonPage />} />
       </Routes>
     </Box>
   )

@@ -7,7 +7,8 @@ import {
   BoxProps,
   Circle,
   Flex,
-  useColorModeValue
+  useColorModeValue,
+  Text
 } from '@chakra-ui/react';
 import { FaTools } from 'react-icons/fa';
 // Here we have used react-icons package for the icons
@@ -19,70 +20,67 @@ const Milestones = (props: any) => {
   const { milestoneArray } = props
 
   return (
-    <Container maxW="7xl">
-      <VStack textAlign="start" align="start" mb={5}>
-        <Box zIndex={5}>
-          <Box>
-            {milestoneArray.length === 0 &&
-              <Heading size="sm" as="b" textAlign={"center"} mb={2}>
-                No Milestones as of now
-              </Heading>
-            }
-            {milestoneArray.map(() => (
-              <MilestoneItem icon={FaTools}>
-                Learnt{' '}
-                <Link
-                  href="https://www.typescriptlang.org"
-                  color={linkColor}
-                  _hover={{ color: linkHoverColor }}
-                  isExternal
-                >
-                  Typescript
-                </Link>{' '}
-                and{' '}
-                <Link
-                  href="https://nextjs.org"
-                  color={linkColor}
-                  _hover={{ color: linkHoverColor }}
-                  isExternal
-                >
-                  Next.js
-                </Link>
-              </MilestoneItem>
-            ))}
-          </Box>
+    <VStack textAlign="start" align="start" mb={5}>
+      <Box zIndex={5} w="100%">
+        <Heading fontSize="xl" fontWeight="600" mb={10} textAlign={"left"}>
+          Milestones achieved so far
+        </Heading>
+        <Box >
+          {milestoneArray && milestoneArray.length === 0 && (
+            <Box
+              w="100%"
+              h="100px"
+              display="flex"
+              justifyContent="center"
+              alignItems="center"
+            >
+              <Text color={'gray.500'} fontSize={"md"} fontWeight={"normal"} textAlign={"center"}>
+                No milestones achieved yet
+              </Text>
+            </Box>
+          )}
+          {/* milestone is array of string */}
+          {milestoneArray && milestoneArray.map((milestone: any) => (
+            <MilestoneItem key={milestone}
+              // add skiptrain when index is last
+              skipTrail={milestoneArray.indexOf(milestone) === milestoneArray.length - 1}
+            >
+              <Box mt="1px">
+                {milestone}
+              </Box>
+            </MilestoneItem>
+          ))}
         </Box>
-      </VStack>
-    </Container>
+      </Box>
+    </VStack>
+
   );
 };
 
 interface MilestoneItemProps extends BoxProps {
-  icon?: any;
   boxProps?: BoxProps;
   skipTrail?: boolean;
 }
 
 const MilestoneItem: React.FC<MilestoneItemProps> = ({
-  icon = FiCheckCircle,
   boxProps = {},
   skipTrail = false,
   children,
   ...props
 }) => {
-  const color = useColorModeValue('gray.700', 'gray.500');
+  const color = useColorModeValue('gray.400', 'gray.500');
   return (
     <Flex minH={20} {...props}>
-      <Flex flexDir="column" alignItems="center" mr={4} pos="relative">
+      <Flex flexDir="column" alignItems="center" mr={4} mt="8px" pos="relative">
         <Circle
-          size={12}
+          size={3}
           bg={useColorModeValue('gray.600', 'gray.500')}
           opacity={useColorModeValue(0.07, 0.15)}
         />
-        <Box as={icon} size="1.25rem" color={color} pos="absolute" left="0.875rem" top="0.875rem" />
-        {!skipTrail && <Box w="1px" flex={1} bg={color} my={1} />}
+        <Box color={color} pos="absolute" left="0.875rem" top="0.875rem" />
+        {!skipTrail && <Box w="1px" flex={1} bg={color} />}
       </Flex>
-      <Box pt={{ base: 1, sm: 3 }} {...boxProps}>
+      <Box {...boxProps}>
         {children}
       </Box>
     </Flex>

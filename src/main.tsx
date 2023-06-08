@@ -13,6 +13,10 @@ const theme = extendTheme({
   colors: {
     light: {},
     dark: {}
+  },
+  fonts:{
+    // inter font
+    body: 'Inter, sans-serif',
   }
 })
 

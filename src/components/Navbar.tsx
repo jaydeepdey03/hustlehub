@@ -119,6 +119,34 @@ const Navbar = () => {
         })
     }
 
+    const [hackathonLoading, setHackathonLoading] = useState(false)
+    const createNewHackathon = async (title: string, idea: string, image: string, noOfMembers: number) => {
+        setHackathonLoading(true)
+        DB.createDocument("646cfa393629aedbd58f", "646ed5510d2cb68ff19f", ID.unique(), {
+            title: title,
+            idea: idea,
+            // image: image,
+            noOfMembers: noOfMembers,
+            creator: data.$id,
+        }).then(res => {
+            DB.listDocuments("646cfa393629aedbd58f", "646ed5510d2cb68ff19f")
+                .then((res) => {
+                    // Update the startup collection state with the fetched data
+                    // setStartupCollection(res.documents);
+                    HackathonDisclosure.onClose()
+                })
+                .catch((err) => {
+                    console.log(err);
+                    HackathonDisclosure.onClose()
+                });
+        }).catch((err: unknown) => {
+            const appwriteexception = err as AppwriteException
+            console.log(appwriteexception.message)
+        }).finally(() => {
+            setHackathonLoading(false)
+        })
+    }
+
     return (
         <>
             <Modal onClose={startupDisclosure.onClose} size={"xl"} isOpen={startupDisclosure.isOpen}>
@@ -242,7 +270,7 @@ const Navbar = () => {
                                     <ModalFooter pr="0">
                                         <Button
                                             isLoading={startupLoading}
-                                            loadingText="Submitting..."
+                                            loadingText="Creating..."
                                             colorScheme='linkedin' type="submit">Submit</Button>
                                     </ModalFooter>
                                 </form>
@@ -275,13 +303,13 @@ const Navbar = () => {
 
                         onSubmit={(value, action) => {
                             // add data to appwrite database
-                            setLoading(true);
-
-                            setTimeout(() => {
-                                setLoading(false);
-                                HackathonDisclosure.onClose();
-                            }, 2000);
-
+                            createNewHackathon(
+                                value.title,
+                                value.idea,
+                                value.image,
+                                value.noOfMembers
+                            )
+                            console.log(value, 'hackathon form')
                             action.resetForm()
                         }}
                     >
@@ -312,8 +340,8 @@ const Navbar = () => {
                                                 <FormControl>
                                                     <FormLabel>Files</FormLabel>
                                                     <Input
+                                                        accept="image/*"
                                                         type="file"
-                                                        multiple
                                                         sx={{
                                                             "::file-selector-button": {
                                                                 height: 10,
@@ -334,8 +362,9 @@ const Navbar = () => {
                                                     <NumberInput
                                                         defaultValue={0}
                                                         max={6}
-                                                        keepWithinRange={false}
-                                                        clampValueOnBlur={false}
+                                                        min={1}
+                                                        keepWithinRange={true}
+                                                        clampValueOnBlur={true}
                                                     >
                                                         <NumberInputField
                                                             {...formik.getFieldProps('noOfMembers')}
@@ -353,8 +382,8 @@ const Navbar = () => {
                                     <ModalFooter>
                                         <Button
                                             type="submit"
-                                            isLoading={loading}
-                                            loadingText="Submitting..."
+                                            isLoading={hackathonLoading}
+                                            loadingText="Creating..."
                                             bg={'blue.400'}
                                             color={'white'}
                                             _hover={{
@@ -366,14 +395,12 @@ const Navbar = () => {
                                 </form>
                             </>
                         )}
-
-
                     </Formik>
                 </ModalContent>
             </Modal >
 
 
-            <Box bg={useColorModeValue('gray.50', 'gray.900')} shadow={"xs"} px={4}>
+            <Box bg={useColorModeValue('white', 'gray.900')} px={4}>
                 <Flex h={16} alignItems={'center'} justifyContent={'space-between'}>
                     <IconButton
                         size={'md'}
@@ -385,12 +412,12 @@ const Navbar = () => {
                     <HStack spacing={8} alignItems={'center'}>
                         <HStack spacing="5">
                             <Text as="b">HustleHub</Text>
-                            <Image 
+                            <Image
                                 src="/built-with-appwrite.svg"
                                 alt="logo"
                                 width="8rem"
                                 height="auto"
-                                />
+                            />
                         </HStack>
                     </HStack>
                     <Flex alignItems={'center'} justifyContent={"space-around"}>
@@ -405,7 +432,6 @@ const Navbar = () => {
                             {data.$id ?
                                 <>
                                     <Box>
-
                                         <Menu>
                                             <MenuButton
                                                 as={Button}
@@ -420,7 +446,7 @@ const Navbar = () => {
                                             </MenuButton>
                                             <MenuList>
                                                 <MenuItem>Logged in as: {role}</MenuItem>
-                                                <MenuItem><Link to={`/profile/${data.$id}`}>Profile</Link></MenuItem>
+                                                <Link to={`/profile/${data.$id}`}><MenuItem>Profile</MenuItem></Link>
                                                 {/* <MenuItem>Link 2</MenuItem> */}
                                                 <MenuDivider />
                                                 <MenuItem><Button onClick={() => Logout()}>Logout</Button></MenuItem>

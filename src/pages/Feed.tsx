@@ -1,21 +1,26 @@
 import { useEffect, useState } from "react"
 import { DB, SDK } from "../appwrite/appwrite-config"
-import { Box, Stack, Tab, TabIndicator, TabList, TabPanel, TabPanels, Tabs, useDisclosure, useToast } from "@chakra-ui/react"
+import { Box, Stack, Tab, TabIndicator, TabList, TabPanel, TabPanels, Tabs, Text, useDisclosure, useToast } from "@chakra-ui/react"
 import { useNavigate } from "react-router-dom"
 import Navbar from "../components/Navbar"
 import '../App.css'
 import Startupcard from "../components/Startup/Startupcard"
 import Hackathoncard from "../components/hackathon/Hackathoncard"
+import { BsRocketTakeoff } from 'react-icons/bs'
+import { FiMonitor } from 'react-icons/fi'
 
 
 const Feed = () => {
     const navigate = useNavigate()
     const toast = useToast()
+    // details matlab current logged in user
     const [details, setDetails] = useState({} as any)
     const [role, setRole] = useState('' as any)
     const [startupCollection, setStartupCollection] = useState([] as any)
+    const [hackathonCollection, setHackathonCollection] = useState([] as any)
     const [joinLoading, setJoinLoading] = useState(false)
     const startupDisclosure = useDisclosure();
+
     useEffect(() => {
         SDK.get().then(res => {
             setDetails(res)
@@ -40,6 +45,12 @@ const Feed = () => {
         })
     }, [])
 
+    useEffect(() => {
+        DB.listDocuments('646cfa393629aedbd58f', '646ed5510d2cb68ff19f').then(res => {
+            setHackathonCollection(res.documents)
+        }).catch(err => console.log(err))
+    }, [])
+
     const joinStartup = (userId: string, documentId: string) => {
         setJoinLoading(true)
         DB.updateDocument('646cfa393629aedbd58f', '646cfa7aa01148c42ebf', documentId, {
@@ -50,6 +61,8 @@ const Feed = () => {
         })
     }
 
+    console.log(hackathonCollection, 'hackathon')
+
     return (
         <>
             {/* Modal */}
@@ -59,10 +72,16 @@ const Feed = () => {
             <p>{details.email}</p> */}
 
                 <Box m={"auto"} p="6" w={{ base: "100vw", lg: "65vw" }}>
-                    <Tabs position="relative" variant="unstyled" isFitted isLazy>
+                    <Tabs position="relative" variant="unstyled" isFitted isLazy defaultIndex={0}>
                         <TabList>
-                            <Tab _focus={{ outline: 'none' }} _hover={{ outline: 'none' }}>Startups</Tab>
-                            <Tab _focus={{ outline: 'none' }} _hover={{ outline: 'none' }}>Hackathons</Tab>
+                            <Tab _focus={{ outline: 'none' }} _hover={{ outline: 'none' }}>
+                                <BsRocketTakeoff />
+                                <Text ml="2">Startups</Text>
+                            </Tab>
+                            <Tab _focus={{ outline: 'none' }} _hover={{ outline: 'none' }}>
+                                <FiMonitor />
+                                <Text ml="2">Hackathons</Text>
+                            </Tab>
                         </TabList>
                         <TabIndicator
                             mt="-1.5px"
@@ -94,7 +113,21 @@ const Feed = () => {
 
                             </TabPanel>
                             <TabPanel>
-                                <Hackathoncard />
+                                {
+                                    hackathonCollection && hackathonCollection.map((document: any, index: number) => {
+                                        console.log(document, 'document')
+                                        return (
+                                            <>
+                                                <Hackathoncard
+                                                    key={index}
+                                                    document={document}
+                                                    details={details}
+                                                    role={role}
+                                                />
+                                            </>
+                                        )
+                                    })
+                                }
                             </TabPanel>
                         </TabPanels>
                     </Tabs>

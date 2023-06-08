@@ -4,7 +4,10 @@ import { Field, FieldArray, Formik } from 'formik';
 import * as Yup from 'yup';
 import { useRef } from "react";
 import { AddIcon, CloseIcon } from "@chakra-ui/icons";
-import { DB } from "../../appwrite/appwrite-config";
+import { DB, storage } from "../../appwrite/appwrite-config";
+import { ID } from "appwrite";
+import { Link } from "react-router-dom";
+import Profilecard from "../../pages/Profilecard";
 
 const Startupcard = (props: any) => {
     const { document, details, role, joinStartup, index, joinLoading } = props
@@ -12,25 +15,33 @@ const Startupcard = (props: any) => {
     const updateDisclosure = useDisclosure()
     const fileRef = useRef<HTMLInputElement | null>(null);
 
-    const UpDateStartup = (
-        title: string,
-        description: string,
-        image: File,
-        milestone: string[]
-    ) => {
-
-        DB.updateDocument('646cfa393629aedbd58f', '646cfa7aa01148c42ebf', document.$id, {
-            title,
-            idea: description,
-            image,
-            milestone
-        }).then((res) => {
-            updateDisclosure.onClose()
-            console.log("updated startup", res)
-        }).catch(err => console.log(err))
+    const uploadImage = async (fileObj: any) => {
+        try {
+            console.log(fileObj, 'fileObj')
+            const res = await storage.createFile("647a464fabf94fdc2ebf", ID.unique(), fileObj)
+            return res;
+        } catch (err) {
+            console.log(err)
+        }
     }
 
-    console.log(document, 'startup card')
+    const UpdateStartup = (title: string, description: string, image: File, milestone: string[]) => {
+        storage.createFile("647a464fabf94fdc2ebf", ID.unique(), image).then(res => {
+            const url = storage.getFilePreview("647a464fabf94fdc2ebf", res.$id)
+            DB.updateDocument('646cfa393629aedbd58f', '646cfa7aa01148c42ebf', document.$id, {
+                title,
+                idea: description,
+                image: url,
+                milestones: milestone
+            }).then((res1) => {
+                updateDisclosure.onClose()
+                console.log("updated startup", res1)
+            }).catch(err => console.log(err, 'err at update doc'))
+        }).catch(err1 => console.log('err at create file', err1))
+    }
+
+    // console.log(document, 'startup card')
+
     return (
         <>
             <Box key={index}>
@@ -50,7 +61,7 @@ const Startupcard = (props: any) => {
                                 </Stack>
                                 <HStack spacing={"4"} pl='4'>
                                     <Box>
-                                        <Heading mb='3' size='sm'>Founder <span>{ }</span> </Heading>
+                                        <Heading mb='3' size='sm'>Founder </Heading>
                                         <HStack>
                                             <Avatar size={"sm"} name={"Dan Abramov"} src={"https://bit.ly/dan-abramov"} />
                                             <Text fontSize={"sm"} color={useColorModeValue('gray',
@@ -78,21 +89,20 @@ const Startupcard = (props: any) => {
                         </ModalBody>
                         <ModalFooter justifyContent={"space-between"}>
 
-                            {role === 'investor' ? <Button colorScheme="telegram">Fund</Button> : <Button colorScheme="telegram">Join</Button>}
-                            <Button onClick={learnMoreDisclosure.onClose}>Close</Button>
+
                         </ModalFooter>
                     </ModalContent>
                 </Modal>
                 <Card
-                    direction={{ base: 'column', md: 'row' }}
+                    direction={{ base: 'column', xl: 'row' }}
                     overflow='hidden'
                     variant='outline'
                 >
                     <Image
                         objectFit='cover'
-                        maxW={{ base: '100%', md: '200px' }}
+                        maxW={{ base: '100%', xl: '200px' }}
                         m="4"
-                        src='https://images.unsplash.com/photo-1667489022797-ab608913feeb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHw5fHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=800&q=60'
+                        src={document.image != null ? document.image : 'https://images.unsplash.com/photo-1667489022797-ab608913feeb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHw5fHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=800&q=60'}
                         alt='Caffe Latte'
                     />
 
@@ -102,50 +112,30 @@ const Startupcard = (props: any) => {
                                 <Heading size='md'>{document.title}</Heading>
                                 <Box alignItems={"center"}>
                                     <Text fontSize={"sm"}>Startup Idea</Text>
-                                    <Text fontSize="md" noOfLines={4} minW="xl">
+                                    <Text fontSize="md" noOfLines={4} minW={{ base: "xs", md: "lg" }}>
                                         {document.idea}
                                     </Text>
                                 </Box>
                             </Stack>
                         </CardBody>
-                        <Stack direction={{ base: "column", md: "row" }} spacing={"4"} pl='4'>
+                        <Stack direction={{ base: "column", lg: "row" }} spacing={"10"} pl='4'>
                             <Box>
-                                <Heading mb='3' size='sm'>Founder </Heading>
-                                <HStack>
-                                    <Avatar size={"sm"} name={"Dan Abramov"} src={"https://bit.ly/dan-abramov"} />
-                                    <Text fontSize={"sm"} color={useColorModeValue('gray',
-                                        'white')}>
-                                        {/* put user name */}
-                                        {document.founder} {document.founder === details.$id && '(You)'}</Text>
-                                </HStack>
+                                <Heading mb='3' size='sm' fontWeight={"semibold"}>Founder </Heading>
+                                <Profilecard userId={document.founder} created={false} />
                             </Box>
                             {document.cofounder !== null && <Box>
-                                <Heading mb='3' size='sm'>Co-Founder</Heading>
-                                <HStack>
-                                    <Avatar size="sm" name='Ryan Florence' src='https://bit.ly/ryan-florence' />
-                                    <Text fontSize={"sm"} color={useColorModeValue('gray', 'white')}>{
-                                        document.cofounder
-                                    }</Text>
-                                </HStack>
+                                <Heading mb='3' size='sm' fontWeight={"semibold"}>Co-Founder</Heading>
+                                <Profilecard userId={document.cofounder} created={false} />
                             </Box>}
                         </Stack>
 
-                        <CardFooter justifyContent={"space-between"}>
-                            {role === 'investor' ? <Button colorScheme="telegram">Fund</Button> :
-                                (document.founder == details.$id) ?
-                                    <Button onClick={updateDisclosure.onOpen} colorScheme="twitter" size={"sm"}>Update</Button> :
-                                    (document.cofounder !== null) ?
-                                        <Button isDisabled={true} size="sm">Co-founder found</Button> :
-                                        <Button
-                                            isLoading={joinLoading}
-                                            loadingText="Joining..."
-                                            onClick={() => {
-                                                joinStartup(details.$id, document.$id)
-                                            }} variant='solid' colorScheme='telegram' size="sm">
-                                            Join Startup
-                                        </Button>}
+                        <CardFooter justifyContent={"end"}>
+                            {role === 'investor' && <Button colorScheme="telegram">Fund</Button>}
                             <Button
-                                onClick={learnMoreDisclosure.onOpen}
+                                // onClick={learnMoreDisclosure.onOpen}
+                                as={Link}
+                                state={{ documentId: document.$id, role: role }}
+                                to={`/startup/${document.$id}`}
                                 variant='solid' colorScheme='telegram' size="sm">
                                 Learn More
                             </Button>
@@ -177,12 +167,12 @@ const Startupcard = (props: any) => {
 
                             onSubmit={(value, action) => {
                                 // add data to appwrite database
-                                // UpDateStartup(
-                                //     value.title,
-                                //     value.description,
-                                //     value.image,
-                                //     value.milestone
-                                // )
+                                UpdateStartup(
+                                    value.title,
+                                    value.description,
+                                    value.image,
+                                    value.milestone
+                                )
                                 console.log(value, 'updated form')
                                 action.resetForm()
                             }}
@@ -223,6 +213,7 @@ const Startupcard = (props: any) => {
                                             >
                                                 <FormLabel>Files</FormLabel>
                                                 <Input
+                                                    id="uploader"
                                                     accept="image/*"
                                                     type="file"
                                                     sx={{
@@ -270,7 +261,7 @@ const Startupcard = (props: any) => {
                                                                                 ml={2}
                                                                             />
                                                                         </Flex>
-                                                                    <FormErrorMessage>{formik.errors.milestone?.[index]}</FormErrorMessage>
+                                                                        <FormErrorMessage>{formik.errors.milestone?.[index]}</FormErrorMessage>
                                                                     </FormControl>
                                                                 </Box>
                                                             ))}
