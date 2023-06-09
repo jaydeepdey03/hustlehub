@@ -1,69 +1,39 @@
-import { Box, Button, Divider, Flex, Image, SimpleGrid, Stack, Text, VStack, useColorModeValue, chakra, Link as ChakraLink, Grid, GridItem, useToast, HStack } from "@chakra-ui/react"
+import { Box, Button, Divider, Flex, Image, Stack, Text, VStack, useColorModeValue, Link as ChakraLink, Grid, GridItem, useToast } from "@chakra-ui/react"
 import Navbar from "../components/Navbar"
 import Profilecard from "./Profilecard"
-import { MdAttachMoney } from "react-icons/md"
 import { BsRocketTakeoff } from "react-icons/bs"
 import { CheckIcon } from "@chakra-ui/icons"
-import { useLocation } from "react-router-dom"
+import { useLocation, useParams } from "react-router-dom"
 import { useEffect, useState } from "react"
 import { DB, SDK } from "../appwrite/appwrite-config"
+import useGlobalState from "../hooks/useGlobalState"
+import { AuthUser, HackathonInterface } from "../types/MyData"
 
 const HackathonPage = () => {
     const location = useLocation()
     console.log(location, 'location')
-    const [details, setDetails] = useState({} as any)
+    const [details, setDetails] = useState({} as AuthUser)
     const toast = useToast()
+    const { hasCreated, setHasCreated } = useGlobalState()
+    const { id } = useParams()
 
     useEffect(() => {
-        SDK.get().then(res => {
-            setDetails(res)
+        SDK.get().then((res: AuthUser) => {
+            setDetails(res as AuthUser)
         }).catch(err => console.log(err))
     }, [location])
 
-    const [hasJoined, setHasJoined] = useState(false)
     const [joinLoading, setJoinLoading] = useState(false)
 
-    const [selectedHackathon, setSelectedHackathon] = useState({} as any)
+    const [selectedHackathon, setSelectedHackathon] = useState({} as HackathonInterface)
 
     useEffect(() => {
-        DB.getDocument('646cfa393629aedbd58f', '646ed5510d2cb68ff19f', location.state.documentId).then(res => {
-            setSelectedHackathon(res)
-        }
-        ).catch(err => console.log(err))
-    }, [location, hasJoined])
-
-    const joinHackathon = async () => {
-        setJoinLoading(true)
-        DB.getDocument('646cfa393629aedbd58f', '646ed5510d2cb68ff19f', location.state.documentId).then(res => {
-            if (res.members.length === res.noOfMembers) {
-                toast({
-                    title: "Hackathon is full",
-                    description: "Sorry, the hackathon is full",
-                    status: "error",
-                    duration: 9000,
-                    isClosable: true,
-                })
-                return
+        if (id) {
+            DB.getDocument('646cfa393629aedbd58f', '646ed5510d2cb68ff19f', id).then(res => {
+                setSelectedHackathon(res as HackathonInterface)
             }
-            DB.updateDocument('646cfa393629aedbd58f', '646ed5510d2cb68ff19f', location.state.documentId, {
-                members: [...res.members, details.$id]
-            }).then(res1 => {
-                setHasJoined(true)
-            }).catch(err => {
-                setHasJoined(false)
+            ).catch(err => {
                 console.log(err)
-            })
-        }).catch(err => console.log(err)).finally(() => setJoinLoading(false))
-    }
-
-    const leaveHackathon = async () => {
-        DB.getDocument('646cfa393629aedbd58f', '646ed5510d2cb68ff19f', location.state.documentId).then(res => {
-            DB.updateDocument('646cfa393629aedbd58f', '646ed5510d2cb68ff19f', location.state.documentId, {
-                members: res.members.filter((member: any) => member !== details.$id)
-            }).then(res1 => {
-                setHasJoined(false)
-            }).catch(err => {
-                setHasJoined(true)
                 toast({
                     title: "Error",
                     description: "Sorry, there was an error",
@@ -71,11 +41,8 @@ const HackathonPage = () => {
                     duration: 9000,
                     isClosable: true,
                 })
-                console.log(err)
             })
-        }).catch(err => {
-            setHasJoined(true)
-            console.log(err)
+        } else {
             toast({
                 title: "Error",
                 description: "Sorry, there was an error",
@@ -83,11 +50,112 @@ const HackathonPage = () => {
                 duration: 9000,
                 isClosable: true,
             })
-        })
+        }
+    }, [location, hasCreated, id, toast])
+
+    const joinHackathon = async () => {
+        setJoinLoading(true)
+        if (id) {
+            DB.getDocument('646cfa393629aedbd58f', '646ed5510d2cb68ff19f', id).then(res => {
+                if (res.members.length === res.noOfMembers) {
+                    toast({
+                        title: "Hackathon is full",
+                        description: "Sorry, the hackathon is full",
+                        status: "error",
+                        duration: 9000,
+                        isClosable: true,
+                    })
+                    return
+                }
+                if (res?.members?.includes(details?.$id)) {
+                    toast({
+                        title: "Already joined",
+                        description: "Sorry, you have already joined the hackathon",
+                        status: "error",
+                        duration: 9000,
+                        isClosable: true,
+                    })
+                    return
+                }
+                DB.updateDocument('646cfa393629aedbd58f', '646ed5510d2cb68ff19f', id, {
+                    members: [...res.members, details?.$id]
+                }).then(() => {
+                    setHasCreated(prev => !prev)
+                }).catch(err => {
+                    console.log(err)
+                })
+            }
+            ).catch(err => {
+                console.log(err)
+                toast({
+                    title: "Error",
+                    description: "Sorry, there was an error",
+                    status: "error",
+                    duration: 9000,
+                    isClosable: true,
+                })
+            }).finally(() => setJoinLoading(false))
+        } else {
+            toast({
+                title: "Error",
+                description: "Sorry, there was an error",
+                status: "error",
+                duration: 9000,
+                isClosable: true,
+            })
+        }
+    }
+
+    const leaveHackathon = async () => {
+        if (id) {
+            DB.getDocument('646cfa393629aedbd58f', '646ed5510d2cb68ff19f', id).then(res => {
+                if (res?.members?.includes(details?.$id) === false) {
+                    toast({
+                        title: "Not joined",
+                        description: "Sorry, you have not joined the hackathon",
+                        status: "error",
+                        duration: 9000,
+                        isClosable: true,
+                    })
+                    return
+                }
+                DB.updateDocument('646cfa393629aedbd58f', '646ed5510d2cb68ff19f', id, {
+                    members: res.members.filter((member: string) => member !== details.$id)
+                }).then(() => {
+                    setHasCreated(prev => !prev)
+                }).catch(err => {
+                    toast({
+                        title: "Error",
+                        description: "Sorry, there was an error",
+                        status: "error",
+                        duration: 9000,
+                        isClosable: true,
+                    })
+                    console.log(err)
+                })
+            }).catch(err => {
+                console.log(err)
+                toast({
+                    title: "Error",
+                    description: "Sorry, there was an error",
+                    status: "error",
+                    duration: 9000,
+                    isClosable: true,
+                })
+            })
+        } else {
+            toast({
+                title: "Error",
+                description: "Sorry, there was an error",
+                status: "error",
+                duration: 9000,
+                isClosable: true,
+            })
+        }
     }
 
 
-    console.log(selectedHackathon, 'selectedHackathon')
+    console.log((selectedHackathon?.members?.includes(details?.$id) || selectedHackathon?.creator === details?.$id), 'selectedHackathon')
 
     return (
         <>
@@ -167,7 +235,7 @@ const HackathonPage = () => {
                     }
                     <Box display="flex" justifyContent="center">
                         <Grid templateColumns={`repeat(${selectedHackathon?.members?.length === 1 ? "1" : "2"}, 1fr)`} gap="9" justifyContent="center">
-                            {selectedHackathon?.members?.map((member: any) => (
+                            {selectedHackathon?.members?.map((member: string) => (
                                 <GridItem key={member}>
                                     <Profilecard userId={member} created={false} details={true} />
                                 </GridItem>
@@ -182,15 +250,17 @@ const HackathonPage = () => {
                     <VStack>
                         {
 
-                            selectedHackathon?.members?.includes(details.$id) ? (
+                            (selectedHackathon?.members?.includes(details?.$id) || selectedHackathon?.creator === details?.$id) ? (
                                 <Stack direction={{
                                     base: "column",
                                     lg: "row"
                                 }} justifyContent="center" alignItems={"center"} p="6">
+
                                     <Button colorScheme="blue" variant="outline" leftIcon={<CheckIcon />} isDisabled={true} size={"lg"}>Joined</Button>
-                                    <Text cursor={"pointer"} mb="6" colorScheme="red" variant="solid"
+
+                                    {(selectedHackathon?.creator !== details?.$id) && <Text cursor={"pointer"} mb="6" colorScheme="red" variant="solid"
                                         onClick={leaveHackathon} color="red" as="u"
-                                    >Leave Hackathon</Text>
+                                    >Leave Hackathon</Text>}
                                 </Stack>
                             )
                                 :

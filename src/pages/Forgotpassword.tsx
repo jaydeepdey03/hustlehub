@@ -7,13 +7,10 @@ import {
   Stack,
   Text,
   useColorModeValue,
+  FormErrorMessage,
 } from '@chakra-ui/react';
-import { Formik } from 'formik';
+import { Field, Formik } from 'formik';
 import * as Yup from 'yup';
-
-type ForgotPasswordFormInputs = {
-  email: string;
-};
 
 export default function ForgotPassword(): JSX.Element {
   return (
@@ -40,7 +37,7 @@ export default function ForgotPassword(): JSX.Element {
           color={useColorModeValue('gray.800', 'gray.400')}>
           You&apos;ll get an email with a reset link
         </Text>
-        <Formik 
+        <Formik
           initialValues={{
             email: '',
           }}
@@ -48,16 +45,17 @@ export default function ForgotPassword(): JSX.Element {
             email: Yup.string().email('Invalid email address').required('Required'),
           })}
           onSubmit={(values, actions) => {
-            
+            console.log(values)
+            actions.resetForm()
           }}
         >
           {formik => (
-            <FormControl id="email">
-              <Input
-                placeholder="your-email@example.com"
-                _placeholder={{ color: 'gray.500' }}
-                type="email"
+            <FormControl id="email" isInvalid={!!formik.errors.email && formik.touched.email}>
+              <Field as={Input}
+                name={'email'}
+                placeholder="Enter your email"
               />
+              <FormErrorMessage>{formik.errors.email}</FormErrorMessage>
             </FormControl>
           )}
         </Formik>

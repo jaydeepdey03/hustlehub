@@ -10,7 +10,6 @@ import {
     createIcon,
     IconProps,
     Image,
-    IconButton,
     Flex,
 } from '@chakra-ui/react';
 // import ToggleTheme from "../components/Toggletheme"
@@ -56,7 +55,7 @@ const Home = () => {
                                 Get started
                             </Button>
                             <Button rounded={'full'} px={6}>
-                                Learn more
+                                Check out
                             </Button>
                         </Stack>
                     </Stack>

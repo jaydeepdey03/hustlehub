@@ -10,8 +10,6 @@ import {
     Flex,
     AvatarGroup,
     Button,
-    Tag,
-    TagLabel,
     chakra,
     HStack,
     Modal,
@@ -25,9 +23,21 @@ import {
 } from '@chakra-ui/react';
 import Profilecard from '../../pages/Profilecard';
 import { Link } from 'react-router-dom';
-const Hackathoncard = (props: any) => {
-    const { document, details, role } = props
+import { AuthUser, HackathonInterface } from '../../types/MyData';
+
+interface HackathoncardProps {
+    document: HackathonInterface,
+    details: AuthUser,
+}
+
+const Hackathoncard = (props: HackathoncardProps) => {
+    const { document  } = props
+    console.log(document, 'doc, props')
     const hackathonDisclosure = useDisclosure()
+
+    const participantsBorder = useColorModeValue("gray", "white")
+    const headingColor = useColorModeValue('gray.700', 'white')
+
     return (
         <>
             <Center py={6}>
@@ -54,7 +64,7 @@ const Hackathoncard = (props: any) => {
                     <Stack p="6" spacing={6} w="100%">
                         <Stack>
                             <Heading
-                                color={useColorModeValue('gray.700', 'white')}
+                                color={headingColor}
                                 fontSize={'2xl'}
                                 fontFamily={'body'}>
                                 {document.title}
@@ -68,18 +78,6 @@ const Hackathoncard = (props: any) => {
                                 </Box>
                             </Box>
                         </Stack>
-                        {/* <Stack mt={6} direction={'row'} spacing={4} align={'center'}>
-                            <Avatar
-                                src={'https://avatars0.githubusercontent.com/u/1164541?v=4'}
-                                name={'Author'}
-                            />
-                            <Stack direction={'column'} spacing={0} fontSize={'sm'}>
-                                <Text fontSize={"xs"} fontWeight={300}>Created by</Text>
-                                <Text fontWeight={600}>Achim Rolle</Text>
-                                <Text color={'gray.500'}>Feb 08, 2021 · 6min read</Text>
-                            </Stack>
-                            
-                        </Stack> */}
                         <Profilecard userId={document.creator} created={true} details={true} />
                         <Flex justifyContent={"space-between"}>
                             <Stack spacing={3}>
@@ -90,12 +88,15 @@ const Hackathoncard = (props: any) => {
                                 {
                                     document.members.length !== 0 ? (
                                         <AvatarGroup size="sm" max={3}>
-                                            {document?.members?.map((member: any) => (
+                                            {document?.members?.map((member: string) => (
                                                 <Profilecard userId={member} created={false} details={false} key={member} />
                                             ))}
                                         </AvatarGroup>
-                                    ) : (
-                                        <Text fontSize="sm" color={useColorModeValue("gray", "white")}>
+                                    
+                                    ) 
+                                    
+                                    : (
+                                        <Text fontSize="sm" color={participantsBorder}>
                                             No Participants yet
                                         </Text>
                                     )
@@ -107,7 +108,7 @@ const Hackathoncard = (props: any) => {
                                 <Button colorScheme='telegram' size={"sm"}
                                     as={Link} to={`/hackathon/${document.$id}`}
                                     state={{ documentId: document.$id }}
-                                >Learn More</Button>
+                                >Check out</Button>
                             </Flex>
                         </Flex>
                     </Stack>

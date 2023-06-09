@@ -1,105 +1,64 @@
 import {
-    Heading,
     Avatar,
     Box,
-    Center,
-    Image,
     Flex,
     Text,
     Stack,
     chakra,
-    Link as ChakraLink, Tab, TabList, TabPanel, TabPanels, Tabs, VStack, Divider, Icon, Grid, HStack, useColorModeValue, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, FormControl, FormLabel, Input, FormErrorMessage, Textarea, FormHelperText, IconButton, Button, ModalFooter, useDisclosure, useToast
+    Link as ChakraLink, Tab, TabList, TabPanel, TabPanels, Tabs, VStack, Divider, Icon, Grid, HStack, useColorModeValue, Button, useDisclosure, useToast
 } from '@chakra-ui/react';
 import Navbar from '../components/Navbar';
-import { Link, useLocation } from 'react-router-dom';
-import { IconType } from 'react-icons/lib';
-import { FaRegComment, FaRegEye, FaRegHeart } from 'react-icons/fa';
+import { Link, useLocation, useParams } from 'react-router-dom';
 import { CiMail } from 'react-icons/ci';
 import { useState, useEffect, Fragment } from 'react';
 import { DB, SDK, storage } from '../appwrite/appwrite-config';
-import { Field, FieldArray, Formik } from 'formik';
-import { CloseIcon } from '@chakra-ui/icons';
-import * as Yup from 'yup';
 import { ID } from 'appwrite';
+import { FiTwitter } from 'react-icons/fi';
+import { AiOutlineLinkedin } from 'react-icons/ai'
 import UpdateStartupModal from '../components/UpdateStartupModal';
-interface ArticleAttributes {
-    title: string;
-    link: string;
-    created_at: string;
-    meta: {
-        reactions: number;
-        comments: number;
-        views: number;
-    };
-}
-
-const articles: ArticleAttributes[] = [
-    {
-        title: 'Started 2022 by updating portfolio website',
-        link: 'https://mahmad.me/blog/started-2022-by-updating-portfolio-website-1jde-temp-slug-4553258',
-        created_at: '21 Jan 2022',
-        meta: {
-            reactions: 225,
-            comments: 20,
-            views: 500
-        }
-    },
-    {
-        title: 'Create professional portfolio website with Nextjs and ChakraUI',
-        link: 'https://mahmad.me/blog/create-professional-portfolio-website-with-nextjs-and-chakraui-4lkn',
-        created_at: '20 Jun 2021',
-        meta: {
-            reactions: 400,
-            comments: 25,
-            views: 300
-        }
-    },
-    {
-        title: `Find out what's new in my portfolio website`,
-        link: 'https://mahmad.me/blog/what-s-new-in-my-portfolio-websitea',
-        created_at: '31 Sept 2022',
-        meta: {
-            reactions: 5,
-            comments: 15,
-            views: 150
-        }
-    }
-];
-
+import UpdateHackathonModal from '../components/UpdateHackathonModal';
+import { StartupInterface, HackathonInterface, User, AuthUser } from '../types/MyData';
 
 function Profile() {
     const location = useLocation()
-    const [userStartup, setUserStartup] = useState([] as any)
-    const [userHackathon, setUserHackathon] = useState([] as any)
-    const [user, setUser] = useState({} as any)
+    console.log(location, 'location')
+    const [userStartup, setUserStartup] = useState([] as StartupInterface[])
+    const [userHackathon, setUserHackathon] = useState([] as HackathonInterface[])
+    const [user, setUser] = useState({} as AuthUser)
     const updateDisclosure = useDisclosure()
+    const updateHackathonDisclosure = useDisclosure()
     const toast = useToast()
     const [updateStartupLoading, setUpdateStartupLoading] = useState(false)
+    const [UpdateHackathonLoading, setUpdateHackathonLoading] = useState(false)
+    const [joinedStartup, setJoinedStartup] = useState([] as StartupInterface[])
+    const [joinedHackathon, setJoinedHackathon] = useState([] as HackathonInterface[])
+    const [details, setDetails] = useState({} as User)
+    const { id } = useParams()
 
-    const UpdateStartup = (title: string, description: string, image: File, milestone: string[]) => {
+    const UpdateStartup = (title: string, description: string, image: File | string, milestone: string[], docId: string) => {
         setUpdateStartupLoading(true)
-        storage.createFile("647a464fabf94fdc2ebf", ID.unique(), image).then(res => {
+        storage.createFile("647a464fabf94fdc2ebf", ID.unique(), image as File).then(res => {
             const url = storage.getFilePreview("647a464fabf94fdc2ebf", res.$id)
-            DB.updateDocument('646cfa393629aedbd58f', '646cfa7aa01148c42ebf', 
-            location.state.documentId
-            , {
-                title,
-                idea: description,
-                image: url,
-                milestones: milestone
-            }).then((res1) => {
-                updateDisclosure.onClose()
-                console.log("updated startup", res1)
-            }).catch(err => {
-                console.log(err)
-                toast({
-                    title: "Error",
-                    description: "Error updating startup",
-                    status: "error",
-                    duration: 9000,
-                    isClosable: true,
+            DB.updateDocument('646cfa393629aedbd58f', '646cfa7aa01148c42ebf',
+                docId
+                , {
+                    title,
+                    idea: description,
+                    image: url,
+                    milestones: milestone
+                }).then((res1) => {
+                    updateDisclosure.onClose()
+                    console.log("updated startup", res1)
+                }).catch(err => {
+                    console.log(err)
+                    toast({
+                        title: "Error",
+                        description: "Error updating startup",
+                        status: "error",
+                        duration: 9000,
+                        isClosable: true,
+                    })
                 })
-            })
         }).catch(err1 => {
             console.log(err1)
             toast({
@@ -111,24 +70,71 @@ function Profile() {
             })
         }).finally(() => setUpdateStartupLoading(false))
     }
+    const UpdateHackathon = (title: string, description: string, image: File | string, noOfMembers: number, link: string, docId: string) => {
+        setUpdateHackathonLoading(true)
+        storage.createFile("647a464fabf94fdc2ebf", ID.unique(), image as File).then(res => {
+            const url = storage.getFilePreview("647a464fabf94fdc2ebf", res.$id)
+            DB.updateDocument('646cfa393629aedbd58f', '646ed5510d2cb68ff19f',
+                docId
+                , {
+                    title,
+                    idea: description,
+                    image: url,
+                    noOfMembers,
+                    link
+                }).then((res1) => {
+                    updateHackathonDisclosure.onClose()
+                    console.log("updated hackathon", res1)
+                }).catch(err => {
+                    console.log(err)
+                    toast({
+                        title: "Error",
+                        description: "Error updating hackathon",
+                        status: "error",
+                        duration: 9000,
+                        isClosable: true,
+                    })
+                })
+        }).catch(err1 => {
+            console.log(err1)
+            toast({
+                title: "Error",
+                description: "Error uploading image",
+                status: "error",
+                duration: 9000,
+                isClosable: true,
+            })
+        }).finally(() => setUpdateHackathonLoading(false))
+    }
+
+
 
     useEffect(() => {
-        SDK.get().then(res => {
+        SDK.get().then((res: AuthUser) => {
             setUser(res)
             // fetch from startup collection the startups created by this user
-            DB.listDocuments('646cfa393629aedbd58f', '646cfa7aa01148c42ebf').then(res1 => {
-                // set array of startups who founder is this user
-                setUserStartup(res1.documents.filter((startup: any) => startup.founder === res.$id))
-            }).catch(err => {
-                console.log(err)
-                toast({
-                    title: "Error",
-                    description: "Error fetching startups",
-                    status: "error",
-                    duration: 9000,
-                    isClosable: true,
+            DB.listDocuments('646cfa393629aedbd58f', '646cfa7aa01148c42ebf')
+                .then(res1 => {
+                    // Convert the documents to StartupInterface type
+                    const startupDocuments = res1?.documents as StartupInterface[];
+
+                    // Filter the array based on cofounder property
+                    const filteredStartups = startupDocuments.filter(startup => startup.cofounder === res?.$id);
+
+                    // Set the filtered array
+                    setJoinedStartup(filteredStartups);
                 })
-            })
+                .catch(err => {
+                    console.log(err);
+                    toast({
+                        title: 'Error',
+                        description: 'Error fetching startups',
+                        status: 'error',
+                        duration: 9000,
+                        isClosable: true,
+                    });
+                });
+
         }).catch(err => {
             console.log(err)
             toast({
@@ -139,33 +145,101 @@ function Profile() {
                 isClosable: true,
             })
         })
-    }, [location])
+
+
+    }, [location, toast])
 
     useEffect(() => {
-        SDK.get().then(res => {
-            setUser(res)
-            // fetch from startup collection the startups created by this user
+        SDK.get().then((res: AuthUser) => {
+            setUser(res as AuthUser)
+            // fetch from hackathons collection the startups created by this user
             DB.listDocuments('646cfa393629aedbd58f', '646ed5510d2cb68ff19f').then(res1 => {
+                // fetch those hackathons whose members array contains current user
+                const hackathonDocument = res1?.documents as HackathonInterface[];
+                const filteredHackathon = hackathonDocument.filter(hackathon => hackathon.members.includes(res?.$id));
+
+                setJoinedHackathon(filteredHackathon)
+            }).catch(err => console.log(err))
+        }).catch(err => console.log(err))
+    }, [location, toast])
+
+    console.log(userHackathon, 'user hacakthon from profile')
+
+
+    useEffect(() => {
+        // list startups whos cofounder is current user
+        SDK.get().then((res: AuthUser) => {
+            setUser(res as AuthUser)
+            // fetch from startup collection the startups created by this user
+            DB.listDocuments('646cfa393629aedbd58f', '646cfa7aa01148c42ebf').then(res1 => {
                 // set array of startups who founder is this user
-                setUserHackathon(res1.documents.filter((hackathon: any) => hackathon.creator === res.$id))
+
+
+                const startupDocuments = res1?.documents as StartupInterface[];
+
+                // Filter the array based on cofounder property
+                const filteredStartups = startupDocuments.filter(startup => startup.cofounder === res?.$id);
+
+                setUserStartup(filteredStartups)
             }).catch(err => console.log(err))
         }).catch(err => console.log(err))
     }, [location])
 
-    console.log(userHackathon, 'user hacakthon from profile')
+    useEffect(() => {
+        SDK.get().then((res: AuthUser) => {
+            setUser(res as AuthUser)
+            // fetch from startup collection the startups created by this user
+            DB.listDocuments('646cfa393629aedbd58f', '646ed5510d2cb68ff19f').then(res1 => {
+                const hackathonDocument = res1?.documents as HackathonInterface[];
+                console.log(hackathonDocument, 'hackathon document')
+                const filteredStartups = hackathonDocument.filter(hackathon => hackathon.creator === res?.$id);
+                setUserHackathon(filteredStartups)
+            }).catch(err => console.log(err))
+        }).catch(err => console.log(err))
+    }, [])
 
+    useEffect(() => {
+        if (id) {
+            DB.getDocument('646cfa393629aedbd58f', '646edbd8de898ccf87c5', id).then((res) => {
+                setDetails(res as User)
+                console.log(res, 'res')
+            }).catch(err => {
+                console.log(err)
+                toast({
+                    title: "Error",
+                    description: "Error fetching user details",
+                    status: "error",
+                    duration: 9000,
+                    isClosable: true,
+                })
+            })
+        }
+        else {
+            toast({
+                title: "Error",
+                description: "Error fetching ID",
+                status: "error",
+                duration: 9000,
+                isClosable: true,
+            })
+        }
+
+    }, [location, toast, id])
+
+    const borderColor = useColorModeValue("gray.200", "gray.700");
+    const createdColor = useColorModeValue('gray.600', 'gray.300')
+    const profileFetchedCardColor = useColorModeValue('gray.600', 'gray.300')
+    
     return (
         <>
             <Navbar />
-            <Stack width={"80%"} m="auto" direction={{ base: 'column', lg: 'row' }} p={"6"} spacing={"10"} justifyContent={"center"}>
-
-
+            <Stack width={"80%"} m="auto" direction={{ base: 'column', lg: 'row' }} p={"6"} spacing={"5"} justifyContent={"center"}>
                 <VStack
                     h="100%"
                     w={{ base: "100%", lg: "30%" }}
                     rounded={"xl"}
                     border={"1px solid"}
-                    borderColor={useColorModeValue('gray.200', 'gray.700')}
+                    borderColor={borderColor}
                     spacing={{ base: 4, md: 10 }}
                 >
                     <Avatar
@@ -198,7 +272,27 @@ function Profile() {
                         <Text fontSize={"sm"} fontWeight={"semibold"} color="gray.500">{user.email}</Text>
                     </HStack>
                     <Divider w="80%" m="auto" />
-                    <HStack></HStack>
+                    <HStack h="4vh" style={{
+                        marginBottom: "32px"
+                    }}
+                        spacing={"10"}
+                    >
+                        {details.twitterLink && <ChakraLink href={details.twitterLink}>
+                            <Icon
+                                as={FiTwitter}
+                                w={5}
+                                h={5}
+                            />
+                        </ChakraLink>}
+                        {details.linkedinLink && <ChakraLink href={details.linkedinLink}>
+                            <Icon
+                                as={AiOutlineLinkedin}
+                                w={5}
+                                h={5}
+                            />
+                        </ChakraLink>}
+
+                    </HStack>
                 </VStack>
 
                 <VStack
@@ -212,8 +306,10 @@ function Profile() {
                 >
                     <Tabs variant='soft-rounded' colorScheme='red' p="4" w="full">
                         <TabList justifyContent="flex-start">
-                            <Tab>Your Startup</Tab>
-                            <Tab>Your Hackathons</Tab>
+                            <Tab fontSize={"sm"}>Your Startup</Tab>
+                            <Tab fontSize={"sm"}>Your Hackathons</Tab>
+                            <Tab fontSize={"sm"}>Joined Startup</Tab>
+                            <Tab fontSize={"sm"}>Joined Hackathons</Tab>
                         </TabList>
                         <TabPanels>
                             <TabPanel>
@@ -231,7 +327,7 @@ function Profile() {
                                     </VStack>
                                 }
                                 <VStack rounded="md" overflow="hidden" spacing={0}>
-                                    {userStartup.map((startup: any, index: number) => (
+                                    {userStartup.map((startup: StartupInterface, index: number) => (
                                         <Fragment key={index}>
                                             <Grid
                                                 templateRows={{ base: 'auto auto', md: 'auto' }}
@@ -241,21 +337,21 @@ function Profile() {
                                                 gap={3}
                                                 alignItems="center"
                                                 justifyContent={"space-between"}
-                                                _hover={{ bg: useColorModeValue('gray.200', 'gray.700') }}
+                                                _hover={{ bg: borderColor }}
                                                 border={"1px solid"}
-                                                borderColor={useColorModeValue('gray.200', 'gray.700')}
+                                                borderColor={borderColor}
                                             >
                                                 <Box gridColumnEnd={{ base: 'span 2', md: 'unset' }}>
                                                     {/* <chakra.h3 as={ChakraLink} href={article.link} isExternal fontWeight="bold" fontSize="lg">
                                                             {startup.title}
                                                         </chakra.h3> */}
-                                                    <chakra.h3 fontWeight="bold" fontSize="lg">
+                                                    <Text fontWeight="bold" fontSize="lg" as={Link} to={`/startup/${startup?.$id}`}>
                                                         {startup.title}
-                                                    </chakra.h3>
+                                                    </Text>
                                                     <chakra.p
                                                         fontWeight="medium"
                                                         fontSize="sm"
-                                                        color={useColorModeValue('gray.600', 'gray.300')}
+                                                        color={createdColor}
                                                     >
                                                         Started: {new Date(startup.$createdAt).toLocaleDateString(
                                                             'en-US',
@@ -272,7 +368,7 @@ function Profile() {
                                                     alignItems="center"
                                                     fontWeight="medium"
                                                     fontSize={{ base: 'xs', sm: 'sm' }}
-                                                    color={useColorModeValue('gray.600', 'gray.300')}
+                                                    color={profileFetchedCardColor}
                                                 >
                                                     {/* <ArticleStat icon={FaRegComment} value={article.meta.comments} />
                                             <ArticleStat icon={FaRegHeart} value={article.meta.reactions} />
@@ -313,12 +409,12 @@ function Profile() {
                                     userHackathon.length === 0 &&
                                     <VStack borderColor="gray.400" rounded="md" overflow="hidden" spacing={2}>
                                         <Text textAlign={"center"} fontSize={"xs"}>
-                                            You have not created any hackathon yet
+                                            You have not created any startup yet
                                         </Text>
                                     </VStack>
                                 }
                                 <VStack borderColor="gray.400" rounded="md" overflow="hidden" spacing={2}>
-                                    {userHackathon.map((hackathon: any, index: number) => (
+                                    {userHackathon.map((hackathon: HackathonInterface, index: number) => (
                                         <Fragment key={index}>
                                             <Grid
                                                 templateRows={{ base: 'auto auto', md: 'auto' }}
@@ -328,21 +424,21 @@ function Profile() {
                                                 gap={3}
                                                 alignItems="center"
                                                 justifyContent={"space-between"}
-                                                _hover={{ bg: useColorModeValue('gray.200', 'gray.700') }}
+                                                _hover={{ bg: borderColor }}
                                                 border={"1px solid"}
-                                                borderColor={useColorModeValue('gray.200', 'gray.700')}
+                                                borderColor={borderColor}
                                             >
                                                 <Box gridColumnEnd={{ base: 'span 2', md: 'unset' }}>
                                                     {/* <chakra.h3 as={ChakraLink} href={article.link} isExternal fontWeight="bold" fontSize="lg">
                                                          {startup.title}
                                                      </chakra.h3> */}
-                                                    <chakra.h3 fontWeight="bold" fontSize="lg">
+                                                    <Text fontWeight="bold" fontSize="lg" as={Link} to={`/startup/${hackathon?.$id}`}>
                                                         {hackathon.title}
-                                                    </chakra.h3>
+                                                    </Text>
                                                     <chakra.p
                                                         fontWeight="medium"
                                                         fontSize="sm"
-                                                        color={useColorModeValue('gray.600', 'gray.300')}
+                                                        color={profileFetchedCardColor}
                                                     >
                                                         Started: {new Date(hackathon.$createdAt).toLocaleDateString(
                                                             'en-US',
@@ -359,7 +455,7 @@ function Profile() {
                                                     alignItems="center"
                                                     fontWeight="medium"
                                                     fontSize={{ base: 'xs', sm: 'sm' }}
-                                                    color={useColorModeValue('gray.600', 'gray.300')}
+                                                    color={profileFetchedCardColor}
                                                 >
                                                     {/* <ArticleStat icon={FaRegComment} value={article.meta.comments} />
                                          <ArticleStat icon={FaRegHeart} value={article.meta.reactions} />
@@ -372,12 +468,186 @@ function Profile() {
                                                     justifySelf="flex-end"
                                                     alignItems="center"
                                                 >
-                                                    <Text as={Button} >
+                                                    <Text as={Button} onClick={updateHackathonDisclosure.onOpen}>
                                                         Edit
                                                     </Text>
                                                 </Stack>
                                             </Grid>
                                             {/* {articles.length - 1 !== index && <Divider m={0} />} */}
+                                            <UpdateHackathonModal
+                                                hackathon={hackathon}
+                                                updateHackathonDisclosure={updateHackathonDisclosure}
+                                                UpdateHackathon={UpdateHackathon}
+                                                UpdateHackathonLoading={UpdateHackathonLoading}
+                                            />
+                                        </Fragment>
+                                    ))}
+                                </VStack>
+                            </TabPanel>
+
+                            <TabPanel>
+                                {
+                                    joinedStartup.length === 0 &&
+                                    <VStack borderColor="gray.400" rounded="md" overflow="hidden" spacing={2}>
+                                        <Text textAlign={"center"} fontSize={"xs"}>
+                                            You have not joined any startup yet
+                                        </Text>
+                                    </VStack>
+                                }
+                                <VStack rounded="md" overflow="hidden" spacing={0}>
+                                    {joinedStartup.map((startup: StartupInterface, index: number) => (
+                                        <Fragment key={index}>
+                                            <Grid
+                                                templateRows={{ base: 'auto auto', md: 'auto' }}
+                                                w="100%"
+                                                templateColumns={{ base: 'unset', md: '4fr 2fr 2fr' }}
+                                                p={{ base: 2, sm: 4 }}
+                                                gap={3}
+                                                alignItems="center"
+                                                justifyContent={"space-between"}
+                                                _hover={{ bg: borderColor }}
+                                                border={"1px solid"}
+                                                borderColor={borderColor}
+                                            >
+                                                <Box gridColumnEnd={{ base: 'span 2', md: 'unset' }}>
+                                                    {/* <chakra.h3 as={ChakraLink} href={article.link} isExternal fontWeight="bold" fontSize="lg">
+                                                            {startup.title}
+                                                        </chakra.h3> */}
+                                                    <Text fontWeight="bold" fontSize="lg" as={Link} to={`/startup/${startup?.$id}`}>
+                                                        {startup.title}
+                                                    </Text>
+                                                    <chakra.p
+                                                        fontWeight="medium"
+                                                        fontSize="sm"
+                                                        color={profileFetchedCardColor}
+                                                    >
+                                                        Started: {new Date(startup.$createdAt).toLocaleDateString(
+                                                            'en-US',
+                                                            {
+                                                                year: 'numeric',
+                                                                month: 'long',
+                                                                day: 'numeric'
+                                                            }
+                                                        )}
+                                                    </chakra.p>
+                                                </Box>
+                                                <HStack
+                                                    spacing={{ base: 0, sm: 3 }}
+                                                    alignItems="center"
+                                                    fontWeight="medium"
+                                                    fontSize={{ base: 'xs', sm: 'sm' }}
+                                                    color={profileFetchedCardColor}
+                                                >
+                                                    {/* <ArticleStat icon={FaRegComment} value={article.meta.comments} />
+                                            <ArticleStat icon={FaRegHeart} value={article.meta.reactions} />
+                                            <ArticleStat icon={FaRegEye} value={article.meta.views} /> */}
+                                                </HStack>
+                                                <Stack
+                                                    spacing={2}
+                                                    direction="row"
+                                                    fontSize={{ base: 'sm', sm: 'md' }}
+                                                    justifySelf="flex-end"
+                                                    alignItems="center"
+                                                >
+                                                    {/* <Text as={Button} onClick={updateDisclosure.onOpen}>
+                                                        Edit
+                                                    </Text> */}
+                                                </Stack>
+                                            </Grid>
+                                            {/* {articles.length - 1 !== index && <Divider m={0} />} */}
+                                            {/* <UpdateStartupModal document={startup}
+                                                updateDisclosure={updateDisclosure}
+                                                UpdateStartup={UpdateStartup}
+                                                updateStartupLoading={updateStartupLoading}
+                                            /> */}
+                                        </Fragment>
+                                    ))}
+                                    {/* <Text textAlign={"center"} fontSize={"xs"}>
+                                        {userStartup.length} fetched
+                                    </Text> */}
+                                </VStack>
+                            </TabPanel>
+                            <TabPanel>
+                                <Flex justify="left" mb={3} justifyContent={"center"}>
+                                    {/* <chakra.h3 fontSize="2xl" fontWeight="bold" textAlign="center">
+                                        Your Hackathons
+                                    </chakra.h3> */}
+                                </Flex>
+                                {
+                                    joinedHackathon.length === 0 &&
+                                    <VStack borderColor="gray.400" rounded="md" overflow="hidden" spacing={2}>
+                                        <Text textAlign={"center"} fontSize={"xs"}>
+                                            You have not created any hackathon yet
+                                        </Text>
+                                    </VStack>
+                                }
+                                <VStack borderColor="gray.400" rounded="md" overflow="hidden" spacing={2}>
+                                    {joinedHackathon.map((hackathon: HackathonInterface, index: number) => (
+                                        <Fragment key={index}>
+                                            <Grid
+                                                templateRows={{ base: 'auto auto', md: 'auto' }}
+                                                w="100%"
+                                                templateColumns={{ base: 'unset', md: '4fr 2fr 2fr' }}
+                                                p={{ base: 2, sm: 4 }}
+                                                gap={3}
+                                                alignItems="center"
+                                                justifyContent={"space-between"}
+                                                _hover={{ bg: borderColor }}
+                                                border={"1px solid"}
+                                                borderColor={borderColor}
+                                            >
+                                                <Box gridColumnEnd={{ base: 'span 2', md: 'unset' }}>
+                                                    {/* <chakra.h3 as={ChakraLink} href={article.link} isExternal fontWeight="bold" fontSize="lg">
+                                                         {startup.title}
+                                                     </chakra.h3> */}
+                                                    <Text fontWeight="bold" fontSize="lg" as={Link} to={`/hackathon/${hackathon?.$id}`}>
+                                                        {hackathon.title}
+                                                    </Text>
+                                                    <chakra.p
+                                                        fontWeight="medium"
+                                                        fontSize="sm"
+                                                        color={profileFetchedCardColor}
+                                                    >
+                                                        Started: {new Date(hackathon.$createdAt).toLocaleDateString(
+                                                            'en-US',
+                                                            {
+                                                                year: 'numeric',
+                                                                month: 'long',
+                                                                day: 'numeric'
+                                                            }
+                                                        )}
+                                                    </chakra.p>
+                                                </Box>
+                                                <HStack
+                                                    spacing={{ base: 0, sm: 3 }}
+                                                    alignItems="center"
+                                                    fontWeight="medium"
+                                                    fontSize={{ base: 'xs', sm: 'sm' }}
+                                                    color={profileFetchedCardColor}
+                                                >
+                                                    {/* <ArticleStat icon={FaRegComment} value={article.meta.comments} />
+                                         <ArticleStat icon={FaRegHeart} value={article.meta.reactions} />
+                                         <ArticleStat icon={FaRegEye} value={article.meta.views} /> */}
+                                                </HStack>
+                                                <Stack
+                                                    spacing={2}
+                                                    direction="row"
+                                                    fontSize={{ base: 'sm', sm: 'md' }}
+                                                    justifySelf="flex-end"
+                                                    alignItems="center"
+                                                >
+                                                    {/* <Text as={Button} onClick={updateHackathonDisclosure.onOpen}>
+                                                        Edit
+                                                    </Text> */}
+                                                </Stack>
+                                            </Grid>
+                                            {/* {articles.length - 1 !== index && <Divider m={0} />} */}
+                                            {/* <UpdateHackathonModal
+                                                hackathon={hackathon}
+                                                updateHackathonDisclosure={updateHackathonDisclosure}
+                                                UpdateHackathon={UpdateHackathon}
+                                                UpdateHackathonLoading={UpdateHackathonLoading}
+                                            /> */}
                                         </Fragment>
                                     ))}
                                 </VStack>
@@ -390,5 +660,6 @@ function Profile() {
         </>
     );
 }
+
 
 export default Profile;

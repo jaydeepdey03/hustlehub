@@ -2,31 +2,27 @@ import { Avatar, Box, Button, Card, CardBody, CardFooter, Flex, FormControl, For
 import Milestones from "./Milestone"
 import { Field, FieldArray, Formik } from 'formik';
 import * as Yup from 'yup';
-import { useRef } from "react";
 import { AddIcon, CloseIcon } from "@chakra-ui/icons";
 import { DB, storage } from "../../appwrite/appwrite-config";
 import { ID } from "appwrite";
 import { Link } from "react-router-dom";
 import Profilecard from "../../pages/Profilecard";
+import { AuthUser, StartupInterface } from "../../types/MyData";
 
-const Startupcard = (props: any) => {
-    const { document, details, role, joinStartup, index, joinLoading } = props
+interface StartupcardProps {
+    document: StartupInterface,
+    details: AuthUser,
+    role: string,
+    index: number
+}
+
+const Startupcard = (props: StartupcardProps) => {
+    const { document, details, role, index } = props
     const learnMoreDisclosure = useDisclosure()
     const updateDisclosure = useDisclosure()
-    const fileRef = useRef<HTMLInputElement | null>(null);
 
-    const uploadImage = async (fileObj: any) => {
-        try {
-            console.log(fileObj, 'fileObj')
-            const res = await storage.createFile("647a464fabf94fdc2ebf", ID.unique(), fileObj)
-            return res;
-        } catch (err) {
-            console.log(err)
-        }
-    }
-
-    const UpdateStartup = (title: string, description: string, image: File, milestone: string[]) => {
-        storage.createFile("647a464fabf94fdc2ebf", ID.unique(), image).then(res => {
+    const UpdateStartup = (title: string, description: string, image: File | string, milestone: string[]) => {
+        storage.createFile("647a464fabf94fdc2ebf", ID.unique(), image as File).then(res => {
             const url = storage.getFilePreview("647a464fabf94fdc2ebf", res.$id)
             DB.updateDocument('646cfa393629aedbd58f', '646cfa7aa01148c42ebf', document.$id, {
                 title,
@@ -40,7 +36,8 @@ const Startupcard = (props: any) => {
         }).catch(err1 => console.log('err at create file', err1))
     }
 
-    // console.log(document, 'startup card')
+
+    const createdColor = useColorModeValue('gray.800', 'gray.400')
 
     return (
         <>
@@ -74,7 +71,7 @@ const Startupcard = (props: any) => {
                                         <Heading mb='3' size='sm'>Co-Founder</Heading>
                                         <HStack>
                                             <Avatar size="sm" name='Ryan Florence' src='https://bit.ly/ryan-florence' />
-                                            <Text fontSize={"sm"} color={useColorModeValue('gray', 'white')}>{
+                                            <Text fontSize={"sm"} color={createdColor}>{
                                                 document.cofounder
                                             }</Text>
                                         </HStack>
@@ -134,7 +131,7 @@ const Startupcard = (props: any) => {
 
                         <CardFooter justifyContent={"space-between"}>
                             <Flex direction={"column"}>
-                                <Text fontSize={"xs"} color={useColorModeValue('gray.800', 'gray.400')}>
+                                <Text fontSize={"xs"} color={createdColor}>
                                     Created at
                                 </Text>
                                 <Text
@@ -260,11 +257,9 @@ const Startupcard = (props: any) => {
                                                 {({ push, remove }) => (
                                                     <>
                                                         <Stack spacing={4}>
-                                                            {formik.values.milestone.map((data: string, index: number) => (
+                                                            {formik.values.milestone.map((_ : string, index: number) => (
                                                                 <Box key={index} display="flex">
-                                                                    <FormControl
-                                                                        isInvalid={formik.errors.milestone?.[index] && formik.touched.milestone?.[index]}
-                                                                    >
+                                                                    <FormControl>
                                                                         <FormLabel>Milestone {index + 1}</FormLabel>
                                                                         <Flex>
                                                                             <Field

@@ -1,34 +1,115 @@
-import { Box, Heading, Icon, Stack, VStack, useColorModeValue, chakra, Text, HStack, Avatar, Divider, Button, Image } from "@chakra-ui/react"
+import { Box, Heading, Stack, VStack, useColorModeValue, Text, Divider, Button, Image, useToast, Flex } from "@chakra-ui/react"
 import Navbar from "../components/Navbar"
 import { BsRocketTakeoff } from "react-icons/bs"
-import { MdAttachMoney } from "react-icons/md"
-import { useLocation } from "react-router-dom"
+import { useLocation, useParams } from "react-router-dom"
 import { useEffect, useState } from "react"
 import { DB, SDK } from "../appwrite/appwrite-config"
 import Milestones from "../components/Startup/Milestone"
 import { CheckIcon } from "@chakra-ui/icons"
 import Profilecard from "./Profilecard"
+import { StartupInterface, AuthUser } from "../types/MyData"
 
 const StartupPage = () => {
     const location = useLocation()
     console.log(location, 'location')
-    const [details, setDetails] = useState({} as any)
+    const [details, setDetails] = useState({} as AuthUser)
+    const [joinLoading, setJoinLoading] = useState(false)
+    const [leaveLoading, setLeaveLoading] = useState(false)
+    const toast = useToast()
+    const [hasJoined, setHasJoined] = useState(false)
+    const { id } = useParams()
 
     useEffect(() => {
-        SDK.get().then(res => {
-            setDetails(res)
+        SDK.get().then((res: AuthUser) => {
+            console.log(res, 'startup page')
+            setDetails(res as AuthUser)
         }).catch(err => console.log(err))
     }, [location])
 
-    const [startup, setStartup] = useState({} as any)
+    const [startup, setStartup] = useState({} as StartupInterface)
     useEffect(() => {
-        DB.getDocument('646cfa393629aedbd58f', '646cfa7aa01148c42ebf', location.state.documentId).then(res => {
-            setStartup(res)
-        }
-        ).catch(err => console.log(err))
-    }, [location])
+        if (id) {
 
-    console.log(startup.cofounder, 'new startup cofounder')
+            DB.getDocument('646cfa393629aedbd58f', '646cfa7aa01148c42ebf', id).then(res  => {
+                setStartup(res as StartupInterface)
+                console.log(res, 'redetails')
+            }
+            ).catch(err => console.log(err))
+        } else {
+            toast({
+                title: "Error",
+                description: "ID is Undefined",
+                status: "error",
+                duration: 9000,
+                isClosable: true,
+            })
+        }
+    }, [location, hasJoined, id, toast])
+
+    const joinStartup = () => {
+        setJoinLoading(true)
+        if (id) {
+            DB.updateDocument('646cfa393629aedbd58f', '646cfa7aa01148c42ebf', id, {
+                cofounder: details?.$id
+            }).then(() => {
+                setHasJoined(prev => !prev)
+            }).catch(err => {
+                console.log(err)
+                toast({
+                    title: "Error",
+                    description: "Error while joining",
+                    status: "error",
+                    duration: 9000,
+                    isClosable: true,
+                })
+            }).finally(() => {
+                setJoinLoading(false)
+            })
+        } else {
+            toast({
+                title: "Error",
+                description: "ID is Undefined",
+                status: "error",
+                duration: 9000,
+                isClosable: true,
+            })
+        }
+
+    }
+
+    const leaveStartup = () => {
+        setLeaveLoading(true)
+        if (id) {
+            DB.updateDocument('646cfa393629aedbd58f', '646cfa7aa01148c42ebf', id, {
+                cofounder: null
+            }).then(() => {
+                setHasJoined(prev => !prev)
+            }).catch(err => {
+                console.log(err)
+                toast({
+                    title: "Error",
+                    description: "Error while leaving",
+                    status: "error",
+                    duration: 9000,
+                    isClosable: true,
+                })
+            }).finally(() => {
+                setLeaveLoading(false)
+            })
+        } else {
+            toast({
+                title: "Error",
+                description: "ID is Undefined",
+                status: "error",
+                duration: 9000,
+                isClosable: true,
+            })
+        }
+
+    }
+
+    console.log(details, 'new startup cofounder')
+    console.log(startup.founder, '1new startup cofounder')
     return (
         <>
             <Navbar />
@@ -47,7 +128,7 @@ const StartupPage = () => {
                         src={startup.image}
                         mt="5"
                     /> */}
-                    <Image 
+                    <Image
                         src={startup.image}
                         alt="Startup Image"
                         boxSize="90%"
@@ -68,10 +149,10 @@ const StartupPage = () => {
                     </Text>
                     <Divider w="80%" m="auto" />
                     <VStack spacing={"10"}>
-                        <Profilecard userId={startup.founder} created={true} details={true}/>
+                        <Profilecard userId={startup.founder} created={true} details={true} />
                     </VStack>
                     <Divider w="80%" m="auto" />
-                    {location.state.role === 'investor' && <Button
+                    {/* {location.state.role === 'investor' && <Button
                         colorScheme="facebook"
                         width={'80%'}
                         m="auto"
@@ -82,9 +163,9 @@ const StartupPage = () => {
                         style={{
                             marginBottom: '30px'
                         }}
-                    >Fund</Button>}
+                    >Fund</Button>} */}
                     {
-                        (startup.cofounder == null) ?
+                        (startup.cofounder == null && startup?.founder !== details?.$id) ?
                             <Button
                                 colorScheme="facebook"
                                 width={'80%'}
@@ -96,30 +177,50 @@ const StartupPage = () => {
                                 style={{
                                     marginBottom: '30px'
                                 }}
-                                // isLoading={joinLoading}
+                                isLoading={joinLoading}
                                 loadingText="Joining..."
                                 onClick={() => {
-                                    // joinStartup(details.$id, document.$id)
+                                    joinStartup()
                                 }}
 
                             >
                                 Join Startup
                             </Button> :
-                            <Button
-                                width={'80%'}
-                                m="auto"
-                                rounded={"full"}
-                                leftIcon={<CheckIcon />}
-                                variant="solid"
-                                size="md"
-                                style={{
-                                    marginBottom: '30px'
-                                }}
-                                // isLoading={joinLoading}
-                                isDisabled={true}
-                            >
-                                Joined
-                            </Button>
+                            <Flex w="90%" alignContent={"center"} direction={"column"}>
+                                <Button
+                                    width={'80%'}
+                                    m="auto"
+                                    rounded={"full"}
+                                    leftIcon={<CheckIcon />}
+                                    variant="solid"
+                                    size="md"
+                                    style={{
+                                        marginBottom: '30px'
+                                    }}
+                                    // isLoading={joinLoading}
+                                    isDisabled={true}
+                                >
+                                    Joined
+                                </Button>
+                                {(startup?.founder !== details?.$id) && <Button
+                                    colorScheme="red"
+                                    width={'80%'}
+                                    m="auto"
+                                    rounded={"full"}
+                                    variant="outline"
+                                    size="md"
+                                    style={{
+                                        marginBottom: '30px'
+                                    }}
+                                    isLoading={leaveLoading}
+                                    loadingText="Leaving..."
+                                    onClick={() => {
+                                        leaveStartup()
+                                    }}
+                                >
+                                    Leave
+                                </Button>}
+                            </Flex>
                     }
 
                 </VStack>
@@ -149,7 +250,7 @@ const StartupPage = () => {
                                     'white')}>
                                     {startup.founder} {startup.founder === details.$id && '(You)'}</Text>
                             </HStack> */}
-                            <Profilecard userId={startup.founder} created={false} details={true}/>
+                            <Profilecard userId={startup.founder} created={false} details={true} />
                         </Box>
                         {startup.cofounder !== null && <Box>
                             <Heading mb='3' size='sm' fontWeight={"semibold"}>Co-Founder</Heading>

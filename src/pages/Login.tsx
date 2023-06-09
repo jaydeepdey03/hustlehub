@@ -4,7 +4,6 @@ import {
   FormControl,
   FormLabel,
   Input,
-  Checkbox,
   Stack,
   Button,
   Heading,
@@ -16,8 +15,8 @@ import {
 import { Formik, Field } from 'formik';
 import * as Yup from 'yup';
 import useGlobalState from '../hooks/useGlobalState';
-import { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { SDK } from '../appwrite/appwrite-config';
 import { Link } from 'react-router-dom';
 // import { useState } from 'react'
@@ -25,15 +24,14 @@ import { Link } from 'react-router-dom';
 export default function Login() {
 
   const { Login, loading } = useGlobalState()
-  const params = useParams()
   const toast = useToast()
-  const [data, setData] = useState({} as any)
+  // const [data, setData] = useState({} as any)
 
   const navigate = useNavigate()
 
   useEffect(() => {
-    SDK.get().then((res) => {
-      setData(res)
+    SDK.get().then(() => {
+      // setData(res)
       navigate('/feed')
       toast({
         title: "You're already logged in",
@@ -43,8 +41,9 @@ export default function Login() {
         isClosable: true,
       })
     }).catch(() => {
+      console.log("not logged in")
     })
-  }, [])
+  }, [navigate, toast])
 
   // useEffect(() => {
   //   // get secret parameter from url if it exists

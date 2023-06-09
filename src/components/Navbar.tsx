@@ -34,7 +34,6 @@ import {
     NumberDecrementStepper,
     FormErrorMessage,
     Image,
-    Text,
     useToast,
 } from '@chakra-ui/react';
 import {
@@ -49,7 +48,8 @@ import { DB, SDK, storage } from '../appwrite/appwrite-config';
 import { Link, useLocation } from 'react-router-dom';
 import { Field, FieldArray, Formik } from 'formik';
 import * as Yup from 'yup';
-import { AppwriteException, ID, Permission, Role } from 'appwrite';
+import { AppwriteException, ID } from 'appwrite';
+import { AuthUser } from '../types/MyData';
 
 // const Links = ['About Us', 'Register', 'Login'];
 
@@ -70,36 +70,34 @@ const NavLink = ({ children, linktxt }: { children: ReactNode, linktxt: string }
 );
 
 
-
-
 const Navbar = () => {
-    const [loading, setLoading] = useState(false)
-    const { Logout } = useGlobalState()
+    const { Logout, setHasCreated } = useGlobalState()
     const { pathname } = useLocation()
-    const [data, setData] = useState({} as any)
+    const [data, setData] = useState({} as AuthUser)
     const profileDisclosure = useDisclosure();
     const startupDisclosure = useDisclosure();
     const HackathonDisclosure = useDisclosure();
     // console.log(location, 'location')
-    const [role, setRole] = useState('' as any)
+    const [role, setRole] = useState('' as string)
     const [startupLoading, setStartupLoading] = useState(false)
     const toast = useToast()
 
 
     useEffect(() => {
-        SDK.get().then((res) => {
+        SDK.get().then((res: AuthUser) => {
             // fetch the user using logged in user id
-            DB.getDocument('646cfa393629aedbd58f', '646edbd8de898ccf87c5', res.$id).then(result => {
+            DB.getDocument('646cfa393629aedbd58f', '646edbd8de898ccf87c5', res.$id).then((result) => {
                 setRole(result.role)
             }).catch(err => console.log(err))
-            setData(res)
+            setData(res as AuthUser)
         }).catch(() => {
+            console.log('not logged in')
         })
     }, [])
 
-    const AddNewStartup = async (title: string, description: string, image: any, milestones: string[] | any) => {
+    const AddNewStartup = async (title: string, description: string, image: File | string, milestones: string[]) => {
         setStartupLoading(true)
-        storage.createFile("647a464fabf94fdc2ebf", ID.unique(), image).then(res => {
+        storage.createFile("647a464fabf94fdc2ebf", ID.unique(), image as File).then(res => {
             const url = storage.getFilePreview("647a464fabf94fdc2ebf", res.$id)
             DB.createDocument("646cfa393629aedbd58f", "646cfa7aa01148c42ebf", ID.unique(), {
                 title: title,
@@ -107,12 +105,14 @@ const Navbar = () => {
                 image: url,
                 founder: data.$id,
                 milestones: milestones,
-            }).then(res1 => {
+            }).then(() => {
                 startupDisclosure.onClose()
+                setHasCreated(prev=>!prev)
                 DB.listDocuments("646cfa393629aedbd58f", "646cfa7aa01148c42ebf")
-                    .then((res2) => {
+                    .then(() => {
                         // Update the startup collection state with the fetched data
                         // setStartupCollection(res.documents);
+                        console.log()
                     })
                     .catch((err2) => {
                         console.log(err2);
@@ -151,9 +151,9 @@ const Navbar = () => {
 
     const [hackathonLoading, setHackathonLoading] = useState(false)
 
-    const createNewHackathon = async (title: string, idea: string, image: any, noOfMembers: number, link:string) => {
+    const createNewHackathon = async (title: string, idea: string, image: File | string, noOfMembers: number, link:string) => {
         setHackathonLoading(true)
-        storage.createFile("647a464fabf94fdc2ebf", ID.unique(), image).then(res => {
+        storage.createFile("647a464fabf94fdc2ebf", ID.unique(), image as File).then(res => {
             const url = storage.getFilePreview("647a464fabf94fdc2ebf", res.$id)
             DB.createDocument("646cfa393629aedbd58f", "646ed5510d2cb68ff19f", ID.unique(), {
                 title: title,
@@ -162,12 +162,14 @@ const Navbar = () => {
                 noOfMembers: noOfMembers,
                 creator: data.$id,
                 link: link,
-            }).then(res => {
+            }).then(() => {
+                setHasCreated(prev=>!prev)
                 HackathonDisclosure.onClose()
                 DB.listDocuments("646cfa393629aedbd58f", "646ed5510d2cb68ff19f")
-                    .then((res) => {
+                    .then(() => {
                         // Update the startup collection state with the fetched data
                         // setStartupCollection(res.documents);
+                        console.log()
                     })
                     .catch((err) => {
                         console.log(err);
@@ -206,6 +208,9 @@ const Navbar = () => {
         })
     }
 
+    const bgColor = useColorModeValue('white', 'gray.900');
+    const buttoncolor = useColorModeValue("gray.100", "gray.500");
+
     return (
         <>
             <Modal onClose={startupDisclosure.onClose} size={"xl"} isOpen={startupDisclosure.isOpen}>
@@ -228,7 +233,7 @@ const Navbar = () => {
                                 image: Yup.mixed().required('Image is required'),
                             })}
 
-                            onSubmit={(value, action) => {
+                            onSubmit={(value) => {
                                 // add data to appwrite database
                                 AddNewStartup(
                                     value.title,
@@ -485,7 +490,7 @@ const Navbar = () => {
             </Modal >
 
 
-            <Box bg={useColorModeValue('white', 'gray.900')} px={4}>
+            <Box bg={bgColor} px={4}>
                 <Flex h={16} alignItems={'center'} justifyContent={'space-between'}>
                     <IconButton
                         size={'md'}
@@ -553,9 +558,9 @@ const Navbar = () => {
                                                 rounded={'full'}
                                                 variant={'link'}
                                                 cursor={'pointer'}
-                                                _active={{ bg: useColorModeValue("gray.100", "gray.500") }}
+                                                _active={{ bg: buttoncolor }}
                                                 minW={0}>
-                                                <Flex bg={useColorModeValue("gray.100", "gray.500")} p="12px" justifyContent={"center"} alignItems={"center"} rounded="full">
+                                                <Flex bg={buttoncolor} p="12px" justifyContent={"center"} alignItems={"center"} rounded="full">
                                                     <Icon as={AddIcon} w="3" h="3" />
                                                 </Flex>
                                             </MenuButton>

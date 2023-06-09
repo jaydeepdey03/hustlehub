@@ -1,6 +1,6 @@
 import { createContext, ReactNode, useState } from 'react'
 import { DB, SDK } from '../appwrite/appwrite-config';
-import { AppwriteException, ID } from 'appwrite'
+import { AppwriteException } from 'appwrite'
 import { useToast } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
 
@@ -10,13 +10,27 @@ interface AuthContextProps {
     ForgotPassword: (email: string) => void,
     Logout: () => void,
     loading: boolean,
+    hasCreated: boolean,
+    setHasCreated: (updateFunction: (prevHasCreated: boolean) => boolean) => void;
 }
 export const Context = createContext<AuthContextProps>({
-    Login: () => { },
-    Register: () => { },
-    ForgotPassword: () => { },
-    Logout: () => { },
+    Login: () => {
+        console.log("login")
+    },
+    Register: () => {
+        console.log("register")
+    },
+    ForgotPassword: () => {
+        console.log("forgot password")
+    },
+    Logout: () => {
+        console.log("logout")
+    },
     loading: false,
+    hasCreated: false,
+    setHasCreated: () => {
+        console.log("set has created")
+    }
 })
 
 
@@ -121,7 +135,13 @@ const AuthContextProvider = ({ children }: { children: ReactNode }) => {
     // can't implement no smtp server
     const ForgotPassword = async (email: string) => {
         SDK.createRecovery(email, "http://localhost:5173/reset").then(() => {
-
+            toast({
+                title: "Recovery email sent.",
+                description: "We've sent you a recovery email.",
+                status: "success",
+                duration: 9000,
+                isClosable: true,
+            })
         }).catch((err: unknown) => {
             const appwriteexception = err as AppwriteException
             toast({
@@ -162,8 +182,10 @@ const AuthContextProvider = ({ children }: { children: ReactNode }) => {
         })
     }
 
+    const [hasCreated, setHasCreated] = useState(false)
+
     return (
-        <Context.Provider value={{ loading, Login, Register, ForgotPassword, Logout }}>
+        <Context.Provider value={{ loading, Login, Register, ForgotPassword, Logout, hasCreated, setHasCreated }}>
             {children}
         </Context.Provider>
     )

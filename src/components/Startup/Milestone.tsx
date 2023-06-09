@@ -2,21 +2,19 @@ import {
   VStack,
   Heading,
   Box,
-  Link,
-  Container,
   BoxProps,
   Circle,
   Flex,
   useColorModeValue,
   Text
 } from '@chakra-ui/react';
-import { FaTools } from 'react-icons/fa';
-// Here we have used react-icons package for the icons
-import { FiPackage, FiHome, FiBarChart2, FiCheckCircle } from 'react-icons/fi';
 
-const Milestones = (props: any) => {
-  const linkColor = 'blue.400';
-  const linkHoverColor = 'blue.600';
+interface MilestoneProps{
+  milestoneArray: string[]
+}
+
+const Milestones = (props: MilestoneProps) => {
+  
   const { milestoneArray } = props
 
   return (
@@ -40,7 +38,7 @@ const Milestones = (props: any) => {
             </Box>
           )}
           {/* milestone is array of string */}
-          {milestoneArray && milestoneArray.map((milestone: any) => (
+          {milestoneArray && milestoneArray.map((milestone: string) => (
             <MilestoneItem key={milestone}
               // add skiptrain when index is last
               skipTrail={milestoneArray.indexOf(milestone) === milestoneArray.length - 1}

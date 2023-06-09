@@ -26,13 +26,11 @@ import { useNavigate, Link } from 'react-router-dom';
 export default function Register() {
   const [showPassword, setShowPassword] = useState(false);
   const { Register, loading } = useGlobalState()
-  const [data, setData] = useState({} as any)
   const navigate = useNavigate()
   const toast = useToast()
 
   useEffect(() => {
-    SDK.get().then((res) => {
-      setData(res)
+    SDK.get().then(() => {
       navigate('/feed')
       toast({
         title: "You're already logged in",
@@ -42,8 +40,15 @@ export default function Register() {
         isClosable: true,
       })
     }).catch(() => {
+      toast({
+        title: "You're not logged in",
+        description: "You're not logged in",
+        status: "error",
+        duration: 9000,
+        isClosable: true,
+      })
     })
-  }, [])
+  }, [navigate, toast])
 
   return (
     <Flex

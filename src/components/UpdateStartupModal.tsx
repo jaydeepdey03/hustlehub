@@ -1,9 +1,17 @@
 import { AddIcon, CloseIcon } from "@chakra-ui/icons"
-import { Box, Button, Flex, FormControl, FormErrorMessage, FormHelperText, FormLabel, IconButton, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Stack, Textarea, useDisclosure } from "@chakra-ui/react"
+import { Box, Button, Flex, FormControl, FormErrorMessage, FormHelperText, FormLabel, IconButton, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Stack, Textarea, UseDisclosureReturn } from "@chakra-ui/react"
 import { Field, FieldArray, Formik } from "formik"
 import * as Yup from 'yup'
+import { StartupInterface } from "../types/MyData"
 
-const UpdateStartupModal = (props: any) => {
+interface UpdateStartupModalProps {
+    document: StartupInterface,
+    updateDisclosure: UseDisclosureReturn,
+    UpdateStartup: (title: string, description: string, image: File | string, milestone: string[], id: string) => void,
+    updateStartupLoading: boolean
+}
+
+const UpdateStartupModal = (props: UpdateStartupModalProps) => {
     const { document, updateDisclosure, UpdateStartup, updateStartupLoading } = props
     return (
         <Modal onClose={updateDisclosure.onClose} size={"xl"} isOpen={updateDisclosure.isOpen}>
@@ -28,16 +36,17 @@ const UpdateStartupModal = (props: any) => {
                             milestone: Yup.array().of(Yup.string().required('Milestone is required')),
                         })}
 
-                        onSubmit={(value, action) => {
+                        onSubmit={(value) => {
                             // add data to appwrite database
                             UpdateStartup(
                                 value.title,
                                 value.description,
                                 value.image,
-                                value.milestone
+                                value.milestone,
+                                document?.$id
                             )
                             console.log(value, 'updated form')
-                            action.resetForm()
+                            // action.resetForm()
                         }}
                     >
                         {(formik) => (
@@ -104,10 +113,9 @@ const UpdateStartupModal = (props: any) => {
                                             {({ push, remove }) => (
                                                 <>
                                                     <Stack spacing={4}>
-                                                        {formik.values.milestone.map((data: string, index: number) => (
+                                                        {formik.values.milestone.map((_: string, index: number) => (
                                                             <Box key={index} display="flex">
                                                                 <FormControl
-                                                                    isInvalid={formik.errors.milestone?.[index] && formik.touched.milestone?.[index]}
                                                                 >
                                                                     <FormLabel>Milestone {index + 1}</FormLabel>
                                                                     <Flex>
