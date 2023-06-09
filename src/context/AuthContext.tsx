@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 
 interface AuthContextProps {
     Login: (email: string, password: string) => void,
-    Register: (firstName: string, lastName: string, email: string, password: string) => void,
+    Register: (firstName: string, lastName: string, email: string, password: string, twitterLink: string, linkedinLink: string) => void,
     ForgotPassword: (email: string) => void,
     Logout: () => void,
     loading: boolean,
@@ -77,7 +77,7 @@ const AuthContextProvider = ({ children }: { children: ReactNode }) => {
     }
 
 
-    const Register = async (firstName: string, lastName: string, email: string, password: string) => {
+    const Register = async (firstName: string, lastName: string, email: string, password: string, twitterLink:string, linkedinLink:string) => {
         setLoading(true)
         try {
             const name = `${firstName} ${lastName}`
@@ -88,6 +88,8 @@ const AuthContextProvider = ({ children }: { children: ReactNode }) => {
                 email: data.email,
                 id: userid,
                 role: 'user',
+                twitterLink: twitterLink,
+                linkedinLink: linkedinLink
             }).then(res => console.log(res)).catch(err => console.error(err))
 
             // can't do this no smtp server
@@ -108,14 +110,14 @@ const AuthContextProvider = ({ children }: { children: ReactNode }) => {
             //         isClosable: true,
             //     })
             // })
+            toast({
+                title: "Registration Successful",
+                description: "Registered",
+                status: "success",
+                duration: 9000,
+                isClosable: true,
+            })
             navigate('/login')
-            // toast({
-            //     title: "Registration Successful",
-            //     description: "Registered",
-            //     status: "success",
-            //     duration: 9000,
-            //     isClosable: true,
-            // })
             setLoading(false)
         } catch (err: unknown) {
             const appwriteexception = err as AppwriteException

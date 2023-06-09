@@ -40,13 +40,7 @@ export default function Register() {
         isClosable: true,
       })
     }).catch(() => {
-      toast({
-        title: "You're not logged in",
-        description: "You're not logged in",
-        status: "error",
-        duration: 9000,
-        isClosable: true,
-      })
+      console.log("Not logged in")
     })
   }, [navigate, toast])
 
@@ -72,15 +66,19 @@ export default function Register() {
               lastName: '',
               email: '',
               password: '',
+              twitterLink: '',
+              linkedinLink: '',
             }}
             validationSchema={Yup.object({
               firstName: Yup.string().required('First name is required'),
               lastName: Yup.string().required('Last name is required'),
               email: Yup.string().email('Invalid email address').required('Email is required'),
               password: Yup.string().required('Password is required').min(6, 'Password is too short - should be 6 chars minimum'),
+              twitterLink: Yup.string().url('Invalid URL'),
+              linkedinLink: Yup.string().url('Invalid URL'),
             })}
             onSubmit={(value, action) => {
-              Register(value.firstName, value.lastName, value.email, value.password)
+              Register(value.firstName, value.lastName, value.email, value.password, value.twitterLink, value.linkedinLink)
               action.resetForm()
             }}
           >
@@ -146,6 +144,30 @@ export default function Register() {
                       </InputRightElement>
                     </InputGroup>
                     <FormErrorMessage>{formik.errors.password}</FormErrorMessage>
+                  </FormControl>
+                  <FormControl id="twitterLink" isRequired
+                    isInvalid={!!formik.errors.twitterLink && formik.touched.twitterLink}
+                  >
+                    <FormLabel>Your Twitter Profile</FormLabel>
+                    <Field
+                      type="text"
+                      as={Input}
+                      name="twitterLink"
+                      placeholder="your twitter link.."
+                    />
+                    <FormErrorMessage>{formik.errors.twitterLink}</FormErrorMessage>
+                  </FormControl>
+                  <FormControl id="email" isRequired
+                    isInvalid={!!formik.errors.linkedinLink && formik.touched.linkedinLink}
+                  >
+                    <FormLabel>Your Linkedin Profile</FormLabel>
+                    <Field
+                      type="text"
+                      as={Input}
+                      name="linkedinLink"
+                      placeholder="your linkedin link.."
+                    />
+                    <FormErrorMessage>{formik.errors.linkedinLink}</FormErrorMessage>
                   </FormControl>
                   <Stack spacing={10} pt={2}>
                     <Button
