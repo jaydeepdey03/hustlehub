@@ -18,7 +18,7 @@ import Footer from '../components/Footer';
 const Home = () => {
     return (
         <>
-                <Navbar />
+            <Navbar />
             <Box h="100vh" w="100vw" overflowX={"hidden"}>
                 <Container maxW={'3xl'} h="100vh">
                     <Stack
