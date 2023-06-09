@@ -33,8 +33,8 @@ import {
     NumberIncrementStepper,
     NumberDecrementStepper,
     FormErrorMessage,
-    Image,
     useToast,
+    Text,
 } from '@chakra-ui/react';
 import {
     HamburgerIcon,
@@ -107,7 +107,7 @@ const Navbar = () => {
                 milestones: milestones,
             }).then(() => {
                 startupDisclosure.onClose()
-                setHasCreated(prev=>!prev)
+                setHasCreated(prev => !prev)
                 DB.listDocuments("646cfa393629aedbd58f", "646cfa7aa01148c42ebf")
                     .then(() => {
                         // Update the startup collection state with the fetched data
@@ -151,7 +151,7 @@ const Navbar = () => {
 
     const [hackathonLoading, setHackathonLoading] = useState(false)
 
-    const createNewHackathon = async (title: string, idea: string, image: File | string, noOfMembers: number, link:string) => {
+    const createNewHackathon = async (title: string, idea: string, image: File | string, noOfMembers: number, link: string) => {
         setHackathonLoading(true)
         storage.createFile("647a464fabf94fdc2ebf", ID.unique(), image as File).then(res => {
             const url = storage.getFilePreview("647a464fabf94fdc2ebf", res.$id)
@@ -163,7 +163,7 @@ const Navbar = () => {
                 creator: data.$id,
                 link: link,
             }).then(() => {
-                setHasCreated(prev=>!prev)
+                setHasCreated(prev => !prev)
                 HackathonDisclosure.onClose()
                 DB.listDocuments("646cfa393629aedbd58f", "646ed5510d2cb68ff19f")
                     .then(() => {
@@ -502,18 +502,20 @@ const Navbar = () => {
                     <HStack spacing={8} alignItems={'center'}>
                         <HStack spacing="5">
                             {/* <Text as="b">HustleHub</Text> */}
-                            <Link to="/"><Image
-                                src="/logo.png"
-                                alt="logo"
-                                width="8rem"
-                                height="auto"
-                            /></Link>
-                            <Image
+                            <Text
+                                color={'red.400'}
+                                fontWeight={"extrabold"}
+                                as={Link}
+                                to="/"
+                            >
+                                HustleHub
+                            </Text>
+                            {/* <Image
                                 src="/built-with-appwrite.svg"
                                 alt="logo"
                                 width="8rem"
                                 height="auto"
-                            />
+                            /> */}
                         </HStack>
                     </HStack>
                     <Flex alignItems={'center'} justifyContent={"space-around"}>
