@@ -19,7 +19,7 @@ const Home = () => {
     return (
         <>
             <Navbar />
-            <Box h="100vh" w="100vw" overflowX={"hidden"}>
+            <Box h="100vh" w="100vw" overflowX={"hidden"} pos="relative">
                 <Container maxW={'3xl'} h="100vh">
                     <Stack
                         as={Box}
@@ -158,7 +158,9 @@ const Home = () => {
                     </Stack>
                 </Container>
             </Box>
-            <Footer />
+            <Box pos="fixed" bottom={"0"} width={"100vw"}>
+                <Footer />
+            </Box>
         </>
     )
 }
