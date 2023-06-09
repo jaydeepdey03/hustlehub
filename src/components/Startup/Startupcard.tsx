@@ -1,13 +1,14 @@
-import { Avatar, Box, Button, Card, CardBody, CardFooter, Flex, FormControl, FormErrorMessage, FormHelperText, FormLabel, HStack, Heading, IconButton, Image, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Stack, Text, Textarea, useColorModeValue, useDisclosure } from "@chakra-ui/react"
+import { Avatar, Box, Button, Card, CardBody, CardFooter, Center, Flex, FormControl, FormErrorMessage, FormHelperText, FormLabel, HStack, Heading, Icon, IconButton, Image, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Stack, Text, Textarea, useColorModeValue, useDisclosure, useToast } from "@chakra-ui/react"
 import Milestones from "./Milestone"
 import { Field, FieldArray, Formik } from 'formik';
 import * as Yup from 'yup';
-import { AddIcon, CloseIcon } from "@chakra-ui/icons";
+import { AddIcon, CloseIcon, DeleteIcon } from "@chakra-ui/icons";
 import { DB, storage } from "../../appwrite/appwrite-config";
 import { ID } from "appwrite";
 import { Link } from "react-router-dom";
 import Profilecard from "../../pages/Profilecard";
 import { AuthUser, StartupInterface } from "../../types/MyData";
+import useGlobalState from "../../hooks/useGlobalState";
 
 interface StartupcardProps {
     document: StartupInterface,
@@ -20,7 +21,8 @@ const Startupcard = (props: StartupcardProps) => {
     const { document, details, role, index } = props
     const learnMoreDisclosure = useDisclosure()
     const updateDisclosure = useDisclosure()
-
+    const toast = useToast()
+    const { setHasCreated } = useGlobalState()
     const UpdateStartup = (title: string, description: string, image: File | string, milestone: string[]) => {
         storage.createFile("647a464fabf94fdc2ebf", ID.unique(), image as File).then(res => {
             const url = storage.getFilePreview("647a464fabf94fdc2ebf", res.$id)
@@ -36,7 +38,28 @@ const Startupcard = (props: StartupcardProps) => {
         }).catch(err1 => console.log('err at create file', err1))
     }
 
-
+    const deleteStartup = (startupId: string) => {
+        DB.deleteDocument('646cfa393629aedbd58f', '646cfa7aa01148c42ebf', startupId).then(res => {
+            setHasCreated(prev => !prev)
+            toast({
+                title: "Startup Deleted",
+                description: "We've deleted your startup for you.",
+                status: "success",
+                duration: 9000,
+                isClosable: true,
+            })
+            console.log("deleted startup", res)
+        }).catch(err => {
+            toast({
+                title: "Error",
+                description: "Error Deleting your startup for you.",
+                status: "error",
+                duration: 9000,
+                isClosable: true,
+            })
+            console.log(err, 'err at delete doc')
+        })
+    }
     const createdColor = useColorModeValue('gray.800', 'gray.400')
 
     return (
@@ -142,19 +165,31 @@ const Startupcard = (props: StartupcardProps) => {
                                         year: 'numeric',
                                         month: 'long',
                                         day: 'numeric'
-                                    })  
+                                    })
                                     }
                                 </Text>
                             </Flex>
                             {/* {role === 'investor' && <Button colorScheme="telegram">Fund</Button>} */}
-                            <Button
-                                // onClick={learnMoreDisclosure.onOpen}
-                                as={Link}
-                                state={{ documentId: document.$id, role: role }}
-                                to={`/startup/${document.$id}`}
-                                variant='solid' colorScheme='telegram' size="sm">
-                                Learn More
-                            </Button>
+                            <HStack>
+
+                                <Button
+                                    // onClick={learnMoreDisclosure.onOpen}
+                                    as={Link}
+                                    state={{ documentId: document.$id, role: role }}
+                                    to={`/startup/${document.$id}`}
+                                    variant='solid' colorScheme='telegram' size="sm">
+                                    Learn More
+                                </Button>
+                                {/* Delete Button */}
+                                {document.founder === details.$id &&
+                                    <Center bg={"red.400"} p="2" rounded="full" w="10" h="10" cursor={"pointer"}>
+                                        <Icon
+                                            onClick={() => deleteStartup(document.$id)}
+                                            as={DeleteIcon}
+                                        />
+                                    </Center>
+                                }
+                            </HStack>
                         </CardFooter>
 
                     </Stack>
@@ -257,7 +292,7 @@ const Startupcard = (props: StartupcardProps) => {
                                                 {({ push, remove }) => (
                                                     <>
                                                         <Stack spacing={4}>
-                                                            {formik.values.milestone.map((_ : string, index: number) => (
+                                                            {formik.values.milestone.map((_: string, index: number) => (
                                                                 <Box key={index} display="flex">
                                                                     <FormControl>
                                                                         <FormLabel>Milestone {index + 1}</FormLabel>
