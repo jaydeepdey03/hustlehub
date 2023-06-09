@@ -8,16 +8,17 @@ import Milestones from "../components/Startup/Milestone"
 import { CheckIcon } from "@chakra-ui/icons"
 import Profilecard from "./Profilecard"
 import { StartupInterface, AuthUser } from "../types/MyData"
+import useGlobalState from "../hooks/useGlobalState"
 
 const StartupPage = () => {
     const location = useLocation()
-    console.log(location, 'location')
     const [details, setDetails] = useState({} as AuthUser)
     const [joinLoading, setJoinLoading] = useState(false)
     const [leaveLoading, setLeaveLoading] = useState(false)
     const toast = useToast()
     const [hasJoined, setHasJoined] = useState(false)
     const { id } = useParams()
+    const { hasCreated } = useGlobalState()
 
     useEffect(() => {
         SDK.get().then((res: AuthUser) => {
@@ -30,7 +31,7 @@ const StartupPage = () => {
     useEffect(() => {
         if (id) {
 
-            DB.getDocument('646cfa393629aedbd58f', '646cfa7aa01148c42ebf', id).then(res  => {
+            DB.getDocument('646cfa393629aedbd58f', '646cfa7aa01148c42ebf', id).then(res => {
                 setStartup(res as StartupInterface)
                 console.log(res, 'redetails')
             }
@@ -44,7 +45,7 @@ const StartupPage = () => {
                 isClosable: true,
             })
         }
-    }, [location, hasJoined, id, toast])
+    }, [location, hasJoined, id, toast, hasCreated])
 
     const joinStartup = () => {
         setJoinLoading(true)
@@ -258,7 +259,7 @@ const StartupPage = () => {
                         </Box>}
                     </Stack>
                     <Divider width={"100%"} />
-                    <Milestones milestoneArray={startup.milestones} />
+                    <Milestones milestoneArray={startup.milestones} startup={startup} user={details} />
                 </Stack>
             </Stack>
         </>

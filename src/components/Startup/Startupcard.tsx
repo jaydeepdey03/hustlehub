@@ -80,7 +80,7 @@ const Startupcard = (props: StartupcardProps) => {
 
                                 <Stack spacing={"5"}>
                                     <Text m="1" fontWeight={"semibold"} fontSize={"md"}>Milestones</Text>
-                                    <Milestones milestoneArray={document.milestones} />
+                                    <Milestones milestoneArray={document.milestones} startup={document} user={details} />
                                 </Stack>
                             </Stack>
                         </ModalBody>
