@@ -36,7 +36,7 @@ function Profile() {
     const [joinedHackathon, setJoinedHackathon] = useState([] as HackathonInterface[])
     const [details, setDetails] = useState({} as User)
     const { id } = useParams()
-    const { setHasCreated } = useGlobalState()
+    const { setHasCreated, hasCreated } = useGlobalState()
 
     const UpdateStartup = (title: string, description: string, image: File | string, milestone: string[], docId: string) => {
         setUpdateStartupLoading(true)
@@ -164,7 +164,7 @@ function Profile() {
                 setJoinedHackathon(filteredHackathon)
             }).catch(err => console.log(err))
         }).catch(err => console.log(err))
-    }, [location, toast])
+    }, [location, toast, hasCreated])
 
     console.log(userHackathon, 'user hacakthon from profile')
 
@@ -181,12 +181,12 @@ function Profile() {
                 const startupDocuments = res1?.documents as StartupInterface[];
 
                 // Filter the array based on cofounder property
-                const filteredStartups = startupDocuments.filter(startup => startup.cofounder === res?.$id);
+                const filteredStartups = startupDocuments.filter(startup => startup.founder === res?.$id);
 
                 setUserStartup(filteredStartups)
             }).catch(err => console.log(err))
         }).catch(err => console.log(err))
-    }, [location])
+    }, [location, hasCreated, toast])
 
     useEffect(() => {
         SDK.get().then((res: AuthUser) => {
@@ -199,7 +199,7 @@ function Profile() {
                 setUserHackathon(filteredStartups)
             }).catch(err => console.log(err))
         }).catch(err => console.log(err))
-    }, [])
+    }, [location, hasCreated, toast])
 
     useEffect(() => {
         if (id) {

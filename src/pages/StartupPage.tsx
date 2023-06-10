@@ -1,4 +1,4 @@
-import { Box, Heading, Stack, VStack, useColorModeValue, Text, Divider, Button, Image, useToast, Flex } from "@chakra-ui/react"
+import { Box, Heading, Stack, VStack, useColorModeValue, Text, Divider, Button, Image, useToast, Flex, Skeleton } from "@chakra-ui/react"
 import Navbar from "../components/Navbar"
 import { BsRocketTakeoff } from "react-icons/bs"
 import { useLocation, useParams } from "react-router-dom"
@@ -139,6 +139,9 @@ const StartupPage = () => {
                         border="2px solid"
                         borderColor={useColorModeValue('gray.200', 'gray.700')}
                         mt="5"
+                        fallback={
+                            <Skeleton mt="4" height="200px" width="90%" />
+                        }
                     />
                     <Text
                         bgGradient='linear(to-l, #7928CA, #FF0080)'

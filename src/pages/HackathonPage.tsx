@@ -1,4 +1,4 @@
-import { Box, Button, Divider, Flex, Image, Stack, Text, VStack, useColorModeValue, Link as ChakraLink, Grid, GridItem, useToast } from "@chakra-ui/react"
+import { Box, Button, Divider, Flex, Image, Stack, Text, VStack, useColorModeValue, Link as ChakraLink, Grid, GridItem, useToast, Skeleton } from "@chakra-ui/react"
 import Navbar from "../components/Navbar"
 import Profilecard from "./Profilecard"
 import { BsRocketTakeoff } from "react-icons/bs"
@@ -186,6 +186,9 @@ const HackathonPage = () => {
                         border="2px solid"
                         borderColor={useColorModeValue('gray.200', 'gray.700')}
                         mt="5"
+                        fallback={
+                            <Skeleton mt="4" height="200px" width="90%" />
+                        }
                     />
                     <Text
                         bgGradient='linear(to-l, #7928CA, #FF0080)'

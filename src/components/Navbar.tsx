@@ -208,7 +208,7 @@ const Navbar = () => {
         })
     }
 
-    const bgColor = useColorModeValue('white', 'gray.900');
+    // const bgColor = useColorModeValue('white', 'gray.900');
     const buttoncolor = useColorModeValue("gray.100", "gray.500");
 
     return (
@@ -490,7 +490,7 @@ const Navbar = () => {
             </Modal >
 
 
-            <Box bg={bgColor} px={4}>
+            <Box px={4} className={"navbar"}>
                 <Flex h={16} alignItems={'center'} justifyContent={'space-between'}>
                     <IconButton
                         size={'md'}

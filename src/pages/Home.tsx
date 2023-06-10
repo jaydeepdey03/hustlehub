@@ -10,41 +10,68 @@ import {
     IconProps,
     Image,
     Flex,
+    useBreakpointValue,
 } from '@chakra-ui/react';
 // import ToggleTheme from "../components/Toggletheme"
+import { ReactElement } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import {
+    FcAbout,
+    FcAssistant,
+    FcCollaboration,
+    FcDonate,
+    FcManager,
+} from 'react-icons/fc';
+
 
 const Home = () => {
     return (
         <>
             <Navbar />
             <Box h="100vh" w="100vw" overflowX={"hidden"} pos="relative">
-                <Container maxW={'3xl'} h="100vh">
+                <Box maxW={'100%'} h="100%" ml={
+                    useBreakpointValue({
+                        base: "3%",
+                        md: "10%"
+                    })
+                }
+
+                    mb={{
+                        base: "30%",
+                        md: "0%"
+                    }}
+                    display={"flex"}
+                    flexDirection={{
+                        base: "column",
+                        md: "row"
+                    }}
+                >
                     <Stack
                         as={Box}
                         textAlign={'center'}
-                        align={'center'}
                         spacing={{ base: 8, md: 8 }}
                         py={{ base: 10, md: 24 }}
                         mb={{ base: 10, md: 24 }}
                         h="80%"
-                        alignContent={"center"}
-                        justifyContent={"center"}
+                        alignItems={"start"}
+                        justifyContent={"space-around"}
                     >
                         <Image src="/built-with-appwrite.svg" alt="logo" h="20%" w="20%" />
                         <Heading
                             fontWeight={"bold"}
                             fontSize={{ base: '5xl', sm: '6xl', md: '7xl' }}
+                            textAlign={"left"}
                             lineHeight={'110%'}>
                             Hustle Together <br />
                             <Text as={'span'} color={'red.400'}>
-                                Thrive Together
+                                Thrive Together 🚀
                             </Text>
                         </Heading>
                         <Text
                             color={'gray.400'}
-                            maxW={'3xl'}
+                            maxW={'xl'}
+                            textAlign={"left"}
                             fontSize={{ base: 'sm', lg: 'md' }}
                         >
                             Uniting Like-minded Go-Getters for Success! Join our vibrant community of passionate individuals who share a common drive for success. Discover endless opportunities to collaborate, network, and thrive together. Together, we embrace the hustle and embark on an empowering journey towards achieving our goals.
@@ -63,19 +90,30 @@ const Home = () => {
                             </Button>
                         </Stack>
                     </Stack>
-                </Container>
-                <Container maxW={'6xl'} h="100vh">
+                    <Image
+                        className='glow-img'
+                        alt={'Hero Image'}
+                        fit={'cover'}
+                        m="auto"
+                        mt={{ base: "auto", md: "32" }}
+                        w={{ base: '90%', md: '50%' }}
+                        h={'50%'}
+                        src={'/hero.png'}
+                        rounded={"xl"}
+                    />
+                </Box>
+                <Container maxW={'70%'} h={{ base: "100%", md: "70%" }}>
                     <Stack
                         // h="90%"
                         align={'center'}
-                        spacing={{ base: 8, md: 10 }}
+                        spacing={{ base: 8, md: 32 }}
                         // py={{ base: 20, md: 28 }}
                         direction={{ base: 'column', md: 'row' }}>
                         <Stack flex={1} spacing={{ base: 5, md: 10 }}>
                             <Heading
                                 lineHeight={1.1}
-                                fontWeight={600}
-                                fontSize={{ base: '5xl', sm: '5xl', lg: '6xl' }}>
+                                fontWeight={700}
+                                fontSize={{ base: '5xl', sm: '4xl', lg: '5xl' }}>
                                 <Text
                                     as={'span'}
                                     position={'relative'}
@@ -90,11 +128,11 @@ const Home = () => {
                                         zIndex: -1,
                                     }}
                                 >
-                                    New Startups,
+                                    Meet New Startups,
                                 </Text>
                                 <br />
                                 <Text as={'span'} color={'red.400'}>
-                                    New Cofounders
+                                    Meet New Cofounders
                                 </Text>
                             </Heading>
                             <Text color={'gray.500'}>
@@ -157,6 +195,65 @@ const Home = () => {
                         </Flex>
                     </Stack>
                 </Container>
+                <Box h="100%">
+                    <Stack spacing={4} as={Container} maxW={'3xl'} textAlign={'center'}>
+                        <Heading fontSize={{ base: '2xl', sm: '4xl' }} fontWeight={'bold'}>
+                            Short heading
+                        </Heading>
+                        <Text color={'gray.600'} fontSize={{ base: 'sm', sm: 'lg' }}>
+                            Lorem ipsum dolor sit amet consectetur adipisicing elit. Reiciendis
+                            obcaecati ut cupiditate pariatur, dignissimos, placeat amet officiis.
+                        </Text>
+                    </Stack>
+
+                    <Container maxW={'5xl'} mt={12}>
+                        <Flex flexWrap="wrap" gridGap={6} justify="center">
+                            <Card
+                                heading={'Heading'}
+                                icon={<Icon as={FcAssistant} w={10} h={10} />}
+                                description={
+                                    'Lorem ipsum dolor sit amet catetur, adipisicing elit.'
+                                }
+                                href={'#'}
+                            />
+                            <Card
+                                heading={'Heading'}
+                                icon={<Icon as={FcCollaboration} w={10} h={10} />}
+                                description={
+                                    'Lorem ipsum dolor sit amet catetur, adipisicing elit.'
+                                }
+                                href={'#'}
+                            />
+                            <Card
+                                heading={'Heading'}
+                                icon={<Icon as={FcDonate} w={10} h={10} />}
+                                description={
+                                    'Lorem ipsum dolor sit amet catetur, adipisicing elit.'
+                                }
+                                href={'#'}
+                            />
+                            <Card
+                                heading={'Heading'}
+                                icon={<Icon as={FcManager} w={10} h={10} />}
+                                description={
+                                    'Lorem ipsum dolor sit amet catetur, adipisicing elit.'
+                                }
+                                href={'#'}
+                            />
+                            <Card
+                                heading={'Heading'}
+                                icon={<Icon as={FcAbout} w={10} h={10} />}
+                                description={
+                                    'Lorem ipsum dolor sit amet catetur, adipisicing elit.'
+                                }
+                                href={'#'}
+                            />
+                        </Flex>
+                    </Container>
+                </Box>
+                <Box h="100vh">
+
+                </Box>
             </Box>
             <Box pos="fixed" bottom={"0"} width={"100vw"}>
                 <Footer />
@@ -180,6 +277,47 @@ export const Blob = (props: IconProps) => {
                 fill="currentColor"
             />
         </Icon>
+    );
+};
+
+interface CardProps {
+    heading: string;
+    description: string;
+    icon: ReactElement;
+    href: string;
+}
+
+const Card = ({ heading, description, icon }: CardProps) => {
+    return (
+        <Box
+            maxW={{ base: 'full', md: '275px' }}
+            w={'full'}
+            borderWidth="1px"
+            borderRadius="lg"
+            overflow="hidden"
+            p={5}>
+            <Stack align={'start'} spacing={2}>
+                <Flex
+                    w={16}
+                    h={16}
+                    align={'center'}
+                    justify={'center'}
+                    color={'white'}
+                    rounded={'full'}
+                    bg={useColorModeValue('gray.100', 'gray.700')}>
+                    {icon}
+                </Flex>
+                <Box mt={2}>
+                    <Heading size="md">{heading}</Heading>
+                    <Text mt={1} fontSize={'sm'}>
+                        {description}
+                    </Text>
+                </Box>
+                <Button variant={'link'} colorScheme={'blue'} size={'sm'}>
+                    Learn more
+                </Button>
+            </Stack>
+        </Box>
     );
 };
 
