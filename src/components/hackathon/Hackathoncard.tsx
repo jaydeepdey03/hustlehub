@@ -20,10 +20,15 @@ import {
     ModalBody,
     ModalFooter,
     useDisclosure,
+    useToast,
+    Icon,
 } from '@chakra-ui/react';
 import Profilecard from '../../pages/Profilecard';
 import { Link } from 'react-router-dom';
 import { AuthUser, HackathonInterface } from '../../types/MyData';
+import useGlobalState from '../../hooks/useGlobalState';
+import { DB } from '../../appwrite/appwrite-config';
+import { DeleteIcon } from '@chakra-ui/icons';
 
 interface HackathoncardProps {
     document: HackathonInterface,
@@ -31,13 +36,36 @@ interface HackathoncardProps {
 }
 
 const Hackathoncard = (props: HackathoncardProps) => {
-    const { document  } = props
+    const { document, details  } = props
     console.log(document, 'doc, props')
     const hackathonDisclosure = useDisclosure()
-
+    const {setHasCreated} = useGlobalState()
+    const toast = useToast()
     const participantsBorder = useColorModeValue("gray", "white")
-    const headingColor = useColorModeValue('gray.700', 'white')
+    const headingColor = useColorModeValue('gray.700', 'white') 
 
+    const deleteHackathon = (hackathonId: string) => {
+        DB.deleteDocument('646cfa393629aedbd58f', '646ed5510d2cb68ff19f', hackathonId).then(res => {
+            setHasCreated(prev => !prev)
+            toast({
+                title: "Hackathon Deleted",
+                description: "We've deleted your Hackathon for you.",
+                status: "success",
+                duration: 9000,
+                isClosable: true,
+            })
+            console.log("deleted Hackathon", res)
+        }).catch(err => {
+            toast({
+                title: "Error",
+                description: "Error Deleting your Hackathon for you.",
+                status: "error",
+                duration: 9000,
+                isClosable: true,
+            })
+            console.log(err, 'err at delete doc')
+        })
+    }
     return (
         <>
             <Center py={6}>
@@ -104,12 +132,21 @@ const Hackathoncard = (props: HackathoncardProps) => {
 
                             </Stack>
                             {/* Button */}
-                            <Flex mt="6" alignItems={"center"}>
+                            <HStack mt="6" alignItems={"center"}>
                                 <Button colorScheme='telegram' size={"sm"}
                                     as={Link} to={`/hackathon/${document.$id}`}
                                     state={{ documentId: document.$id }}
                                 >Check out</Button>
-                            </Flex>
+                                {document.creator === details.$id &&
+                                    <Center bg={"red.400"} p="2" rounded="full" w="10" h="10" cursor={"pointer"}>
+                                        <Icon
+                                            color={"white"}
+                                            onClick={() => deleteHackathon(document.$id)}
+                                            as={DeleteIcon}
+                                        />
+                                    </Center>
+                                }
+                            </HStack>
                         </Flex>
                     </Stack>
                 </Stack>

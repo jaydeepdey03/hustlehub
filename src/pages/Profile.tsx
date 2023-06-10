@@ -5,7 +5,7 @@ import {
     Text,
     Stack,
     chakra,
-    Link as ChakraLink, Tab, TabList, TabPanel, TabPanels, Tabs, VStack, Divider, Icon, Grid, HStack, useColorModeValue, Button, useDisclosure, useToast
+    Link as ChakraLink, Tab, TabList, TabPanel, TabPanels, Tabs, VStack, Divider, Icon, Grid, HStack, useColorModeValue, Button, useDisclosure, useToast, Center
 } from '@chakra-ui/react';
 import Navbar from '../components/Navbar';
 import { Link, useLocation, useParams } from 'react-router-dom';
@@ -18,6 +18,8 @@ import { AiOutlineLinkedin } from 'react-icons/ai'
 import UpdateStartupModal from '../components/UpdateStartupModal';
 import UpdateHackathonModal from '../components/UpdateHackathonModal';
 import { StartupInterface, HackathonInterface, User, AuthUser } from '../types/MyData';
+import { DeleteIcon } from '@chakra-ui/icons';
+import useGlobalState from '../hooks/useGlobalState';
 
 function Profile() {
     const location = useLocation()
@@ -34,6 +36,7 @@ function Profile() {
     const [joinedHackathon, setJoinedHackathon] = useState([] as HackathonInterface[])
     const [details, setDetails] = useState({} as User)
     const { id } = useParams()
+    const { setHasCreated } = useGlobalState()
 
     const UpdateStartup = (title: string, description: string, image: File | string, milestone: string[], docId: string) => {
         setUpdateStartupLoading(true)
@@ -229,7 +232,53 @@ function Profile() {
     const borderColor = useColorModeValue("gray.200", "gray.700");
     const createdColor = useColorModeValue('gray.600', 'gray.300')
     const profileFetchedCardColor = useColorModeValue('gray.600', 'gray.300')
-    
+
+    const deleteStartup = (startupId: string) => {
+        DB.deleteDocument('646cfa393629aedbd58f', '646cfa7aa01148c42ebf', startupId).then(res => {
+            setHasCreated(prev => !prev)
+            toast({
+                title: "Startup Deleted",
+                description: "We've deleted your startup for you.",
+                status: "success",
+                duration: 9000,
+                isClosable: true,
+            })
+            console.log("deleted startup", res)
+        }).catch(err => {
+            toast({
+                title: "Error",
+                description: "Error Deleting your startup for you.",
+                status: "error",
+                duration: 9000,
+                isClosable: true,
+            })
+            console.log(err, 'err at delete doc')
+        })
+    }
+
+    const deleteHackathon = (hackathonId: string) => {
+        DB.deleteDocument('646cfa393629aedbd58f', '646ed5510d2cb68ff19f', hackathonId).then(res => {
+            setHasCreated(prev => !prev)
+            toast({
+                title: "Hackathon Deleted",
+                description: "We've deleted your Hackathon for you.",
+                status: "success",
+                duration: 9000,
+                isClosable: true,
+            })
+            console.log("deleted Hackathon", res)
+        }).catch(err => {
+            toast({
+                title: "Error",
+                description: "Error Deleting your Hackathon for you.",
+                status: "error",
+                duration: 9000,
+                isClosable: true,
+            })
+            console.log(err, 'err at delete doc')
+        })
+    }
+
     return (
         <>
             <Navbar />
@@ -384,6 +433,13 @@ function Profile() {
                                                     <Text as={Button} onClick={updateDisclosure.onOpen}>
                                                         Edit
                                                     </Text>
+                                                    <Center bg={"red.400"} p="2" rounded="full" w="8" h="8" cursor={"pointer"}>
+                                                        <Icon
+                                                            onClick={() => deleteStartup(startup.$id)}
+                                                            color="white"
+                                                            as={DeleteIcon}
+                                                        />
+                                                    </Center>
                                                 </Stack>
                                             </Grid>
                                             {/* {articles.length - 1 !== index && <Divider m={0} />} */}
@@ -471,6 +527,13 @@ function Profile() {
                                                     <Text as={Button} onClick={updateHackathonDisclosure.onOpen}>
                                                         Edit
                                                     </Text>
+                                                    <Center bg={"red.400"} p="2" rounded="full" w="8" h="8" cursor={"pointer"}>
+                                                        <Icon
+                                                            color={"white"}
+                                                            onClick={() => deleteHackathon(hackathon.$id)}
+                                                            as={DeleteIcon}
+                                                        />
+                                                    </Center>
                                                 </Stack>
                                             </Grid>
                                             {/* {articles.length - 1 !== index && <Divider m={0} />} */}

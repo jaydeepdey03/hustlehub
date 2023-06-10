@@ -185,6 +185,7 @@ const Startupcard = (props: StartupcardProps) => {
                                     <Center bg={"red.400"} p="2" rounded="full" w="10" h="10" cursor={"pointer"}>
                                         <Icon
                                             onClick={() => deleteStartup(document.$id)}
+                                            color="white"
                                             as={DeleteIcon}
                                         />
                                     </Center>
