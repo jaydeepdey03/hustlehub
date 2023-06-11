@@ -141,9 +141,9 @@ export default function Login() {
 
                           <Text color={'blue.400'}>New User?</Text>
                         </Link>
-                        <Link to="/forgotpassword">
+                        {/* <Link to="/forgotpassword">
                           <Text color={'blue.400'}>Forgot Password</Text>
-                        </Link>
+                        </Link> */}
                       </Stack>
                       {/* submit button */}
                       <Button

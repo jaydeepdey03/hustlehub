@@ -181,7 +181,7 @@ const HackathonPage = () => {
                         alt="Startup Image"
                         boxSize="90%"
                         height={{ base: "200px", lg: "90%" }}
-                        objectFit="cover"
+                        objectFit="contain"
                         // borderRadius="full"
                         border="2px solid"
                         borderColor={useColorModeValue('gray.200', 'gray.700')}
@@ -194,6 +194,7 @@ const HackathonPage = () => {
                         bgGradient='linear(to-l, #7928CA, #FF0080)'
                         bgClip='text'
                         fontSize='3xl'
+                        textAlign={"center"}
                         fontWeight='extrabold'
                     >
                         {selectedHackathon.title}

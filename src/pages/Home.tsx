@@ -28,8 +28,8 @@ const Home = () => {
     return (
         <>
             <Navbar />
-            <Box h="100vh" w="100vw">
-                <Box maxW={'100%'} h="100%" ml={useBreakpointValue({ base: "3%", md: "10%" })} mb={{ base: "30%", md: "0%" }} display="flex" flexDirection={{ base: "column", lg: "row" }}>
+            <Box h="100%" w="100%">
+                <Box maxW={'100%'} h="100%" ml={useBreakpointValue({ base: "3%", md: "7%" })} mb={{ base: "30%", md: "0%" }} display="flex" flexDirection={{ base: "column", lg: "row" }}>
                     <Stack
                         as={Box}
                         textAlign={'center'}
@@ -53,8 +53,8 @@ const Home = () => {
                         </Heading>
                         <Text
                             color={'gray.400'}
-                            maxW={'xl'}
-                            textAlign={"left"}
+                            maxW={'lg'}
+                            textAlign={"justify"}
                             fontSize={{ base: 'sm', lg: 'md' }}
                         >
                             Uniting Like-minded Go-Getters for Success! Join our vibrant community of passionate individuals who share a common drive for success. Discover endless opportunities to collaborate, network, and thrive together. Together, we embrace the hustle and embark on an empowering journey towards achieving our goals.
@@ -80,14 +80,15 @@ const Home = () => {
                         alt={'Hero Image'}
                         fit={'cover'}
                         m="auto"
-                        mt={{ base: "auto", md: "32" }}
+                        mt={{ base: "auto", md: "auto" }}
                         w={{ base: '90%', md: '50%' }}
+                        mr="7"
                         h={'50%'}
                         src={'/hero.png'}
                         rounded={"xl"}
                     />
                 </Box>
-                <Container maxW={'70%'} h={{ base: "100%", md: "50%" }}>
+                <Container maxW={'85%'} h={{ base: "100%", md: "50%" }}>
                     <Stack
                         // h="90%"
                         align={'center'}
@@ -120,7 +121,7 @@ const Home = () => {
                                     Meet New Cofounders
                                 </Text>
                             </Heading>
-                            <Text color={'gray.500'}>
+                            <Text color={'gray.500'} textAlign={'justify'} maxW="md" fontSize={"md"}>
                                 Embark on a startup journey, find your co-founders, and bring innovation to life. Join our platform, where new startups meet aspiring co-founders. Together, let's shape the future of entrepreneurship.
                             </Text>
                             <Stack
@@ -153,8 +154,8 @@ const Home = () => {
                             position={'relative'}
                             w={'full'}>
                             <Blob
-                                w={'140%'}
-                                h={'140%'}
+                                w={'125%'}
+                                h={'125%'}
                                 position={'absolute'}
                                 top={'-20%'}
                                 left={0}
@@ -223,7 +224,7 @@ const Home = () => {
                         </Stack>
                     </Stack>
                 </Box>
-                <Box mt="10%" px={{ base: "2", md: "5" }}>
+                <Box mt={{base: "10%", md: 0}} px={{ base: "2", md: "5" }}>
                     <Stack spacing={4} as={Container} maxW={{ base: "xl", md: "3xl" }} textAlign="center">
                         <Heading fontSize={{ base: "5xl", sm: "6xl" }} fontWeight="bold">
                             Features

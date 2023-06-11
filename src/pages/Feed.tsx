@@ -86,6 +86,12 @@ const Feed = () => {
                             <TabPanel>
                                 <Stack spacing={'5'}>
                                     {
+                                        startupCollection.length === 0 &&
+                                        <Text mt={"24"} fontSize="xl" fontWeight="bold" textAlign="center" color="gray.500">
+                                            No startups yet
+                                        </Text>
+                                    }
+                                    {
                                         startupCollection.map((startup: StartupInterface, index: number) => {
                                             return (
                                                 <>
@@ -104,6 +110,12 @@ const Feed = () => {
 
                             </TabPanel>
                             <TabPanel>
+                                {
+                                    hackathonCollection.length === 0 &&
+                                    <Text mt={"24"} fontSize="xl" fontWeight="bold" textAlign="center" color="gray.500">
+                                        No Hackathons yet
+                                    </Text>
+                                }
                                 {
                                     hackathonCollection && hackathonCollection.map((document: HackathonInterface, index: number) => {
                                         console.log(document, 'document')

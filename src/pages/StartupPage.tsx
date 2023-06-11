@@ -122,6 +122,7 @@ const StartupPage = () => {
                     borderColor={'gray.200'}
                     rounded={"xl"}
                     spacing={{ base: 4, lg: 10 }}
+                    alignItems={"center"}
                 >
                     {/* <Avatar
                         size="2xl"
@@ -134,7 +135,7 @@ const StartupPage = () => {
                         alt="Startup Image"
                         boxSize="90%"
                         height={{ base: "200px", lg: "90%" }}
-                        objectFit="cover"
+                        objectFit="contain"
                         // borderRadius="full"
                         border="2px solid"
                         borderColor={useColorModeValue('gray.200', 'gray.700')}

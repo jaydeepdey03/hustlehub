@@ -306,23 +306,26 @@ const Navbar = () => {
                                                 {({ push, remove }) => (
                                                     <>
                                                         <Stack spacing={4}>
-                                                            {formik.values.milestone.map((milestoneData, index) => (
+                                                            {formik.values.milestone.map((_, index) => (
                                                                 <Box key={index} display="flex">
                                                                     <FormControl isInvalid={!!formik.errors.milestone?.[index]}>
-                                                                        <FormLabel>Milestone {index + 1}</FormLabel>
-                                                                        <Input
-                                                                            name={`milestone[${index}]`}
-                                                                            value={milestoneData}
-                                                                            onChange={formik.handleChange}
-                                                                        />
+                                                                        <Flex>
+                                                                            <Field
+                                                                                type="text"
+                                                                                placeholder={`Milestone ${index + 1}`}
+                                                                                as={Input}
+                                                                                {...formik.getFieldProps(`milestone[${index}]`)}
+                                                                            />
+                                                                            <IconButton
+                                                                                aria-label="Remove"
+                                                                                icon={<CloseIcon />}
+                                                                                onClick={() => remove(index)}
+                                                                                ml={2}
+                                                                            />
+                                                                        </Flex>
                                                                         <FormErrorMessage>{formik.errors.milestone?.[index]}</FormErrorMessage>
                                                                     </FormControl>
-                                                                    <IconButton
-                                                                        aria-label="Remove"
-                                                                        icon={<CloseIcon />}
-                                                                        onClick={() => remove(index)}
-                                                                        ml={2}
-                                                                    />
+
                                                                 </Box>
                                                             ))}
                                                         </Stack>
