@@ -46,7 +46,8 @@ const Hackathoncard = (props: HackathoncardProps) => {
                     minH={{ base: "100%", lg: "350px" }}
                     bg={useColorModeValue('white', 'gray.900')}
                     // border
-                    border={'2px solid #e2e8f0'}
+                    border={'2px solid'}
+                    borderColor={useColorModeValue('gray.200', 'gray.700')}
                     rounded={'md'}
                     overflow={'hidden'}>
                     <Image

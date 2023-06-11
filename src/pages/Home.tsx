@@ -12,14 +12,16 @@ import {
     Flex,
     useBreakpointValue,
     SimpleGrid,
+    Link as ChakraLink
 } from '@chakra-ui/react';
 // import ToggleTheme from "../components/Toggletheme"
 import { ReactElement } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
-import { BsPeople, BsRocketTakeoff } from 'react-icons/bs';
+import { BsGithub, BsPeople, BsRocketTakeoff } from 'react-icons/bs';
 import { IoMdBuild } from 'react-icons/io';
 import { MdEmojiPeople } from 'react-icons/md';
+import { Link } from 'react-router-dom';
 
 
 const Home = () => {
@@ -27,7 +29,7 @@ const Home = () => {
         <>
             <Navbar />
             <Box h="100vh" w="100vw">
-                <Box maxW={'100%'} h="100%" ml={useBreakpointValue({ base: "3%", md: "10%" })} mb={{ base: "30%", md: "0%" }} display="flex" flexDirection={{ base: "column", md: "row" }}>
+                <Box maxW={'100%'} h="100%" ml={useBreakpointValue({ base: "3%", md: "10%" })} mb={{ base: "30%", md: "0%" }} display="flex" flexDirection={{ base: "column", lg: "row" }}>
                     <Stack
                         as={Box}
                         textAlign={'center'}
@@ -59,6 +61,8 @@ const Home = () => {
                         </Text>
                         <Stack spacing={6} direction={'row'}>
                             <Button
+                                as={Link}
+                                to="/login"
                                 rounded={'full'}
                                 px={6}
                                 colorScheme={'red'}
@@ -66,8 +70,8 @@ const Home = () => {
                                 _hover={{ bg: 'red.500' }}>
                                 Get started
                             </Button>
-                            <Button rounded={'full'} px={6}>
-                                Check out
+                            <Button rounded={'full'} px={6} leftIcon={<BsGithub />} as={ChakraLink} href="https://github.com/jaydeepdey03/hustlehub" target="_blank">
+                                Star me at Github
                             </Button>
                         </Stack>
                     </Stack>
@@ -207,15 +211,14 @@ const Home = () => {
                         />
                         <Stack spacing={6} direction={'row'}>
                             <Button
+                                as={Link}
+                                to="/feed"
                                 rounded={'full'}
                                 px={6}
                                 colorScheme={'orange'}
                                 bg={'orange.400'}
                                 _hover={{ bg: 'orange.500' }}>
                                 Get started
-                            </Button>
-                            <Button rounded={'full'} px={6}>
-                                Learn more
                             </Button>
                         </Stack>
                     </Stack>
@@ -323,7 +326,7 @@ const Card = ({ heading, description, icon }: CardProps) => {
     return (
         <Box
             maxW={{ base: 'full', md: '275px' }}
-            w={'full'}
+            w={'90%'}
             borderWidth="1px"
             borderRadius="lg"
             overflow="hidden"

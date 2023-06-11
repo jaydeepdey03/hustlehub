@@ -507,6 +507,7 @@ const Navbar = () => {
                                 fontWeight={"extrabold"}
                                 as={Link}
                                 to="/"
+                                pl="5"
                             >
                                 HustleHub
                             </Text>
@@ -553,7 +554,6 @@ const Navbar = () => {
                                     </Box>
                                     {/* new menu */}
                                     <Box>
-
                                         <Menu>
                                             <MenuButton
                                                 as={Button}
@@ -585,10 +585,56 @@ const Navbar = () => {
                             spacing={4}
                             display={{ base: 'flex', md: 'none' }}
                         >
-                            {data.$id && <Avatar
-                                size={'sm'}
-                                name={data.name}
-                            />}
+                            {data.$id ?
+                                <>
+                                    <Box>
+                                        <Menu>
+                                            <MenuButton
+                                                as={Button}
+                                                rounded={'full'}
+                                                variant={'link'}
+                                                cursor={'pointer'}
+                                                minW={0}>
+                                                <Avatar
+                                                    size={'sm'}
+                                                    name={data.name}
+                                                />
+                                            </MenuButton>
+                                            <MenuList>
+                                                <MenuItem>Logged in as: {role}</MenuItem>
+                                                <Link to={`/profile/${data.$id}`}><MenuItem>Profile</MenuItem></Link>
+                                                {/* <MenuItem>Link 2</MenuItem> */}
+                                                <MenuDivider />
+                                                <MenuItem><Button onClick={() => Logout()}>Logout</Button></MenuItem>
+                                            </MenuList>
+                                        </Menu>
+                                    </Box>
+                                    {/* new menu */}
+                                    <Box>
+                                        <Menu>
+                                            <MenuButton
+                                                as={Button}
+                                                rounded={'full'}
+                                                variant={'link'}
+                                                cursor={'pointer'}
+                                                _active={{ bg: buttoncolor }}
+                                                minW={0}>
+                                                <Flex bg={buttoncolor} p="12px" justifyContent={"center"} alignItems={"center"} rounded="full">
+                                                    <Icon as={AddIcon} w="3" h="3" />
+                                                </Flex>
+                                            </MenuButton>
+                                            <MenuList>
+                                                <MenuItem as="button" onClick={startupDisclosure.onOpen}>Create Startup Idea</MenuItem>
+                                                <MenuItem as="button" onClick={HackathonDisclosure.onOpen}>Create Hackathon Idea</MenuItem>
+                                            </MenuList>
+                                        </Menu>
+                                    </Box>
+                                </> :
+                                <>
+                                    <NavLink linktxt="/login">Login</NavLink>
+                                    <NavLink linktxt="/register">Register</NavLink>
+                                </>
+                            }
                             <ToggleTheme />
                         </HStack>
                     </Flex>
