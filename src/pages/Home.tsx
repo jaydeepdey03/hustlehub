@@ -11,42 +11,24 @@ import {
     Image,
     Flex,
     useBreakpointValue,
+    Grid,
+    SimpleGrid,
 } from '@chakra-ui/react';
 // import ToggleTheme from "../components/Toggletheme"
 import { ReactElement } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
-import {
-    FcAbout,
-    FcAssistant,
-    FcCollaboration,
-    FcDonate,
-    FcManager,
-} from 'react-icons/fc';
+import { BsPeople, BsRocketTakeoff } from 'react-icons/bs';
+import { IoMdBuild } from 'react-icons/io';
+import { MdEmojiPeople } from 'react-icons/md';
 
 
 const Home = () => {
     return (
         <>
             <Navbar />
-            <Box h="100vh" w="100vw" overflowX={"hidden"} pos="relative">
-                <Box maxW={'100%'} h="100%" ml={
-                    useBreakpointValue({
-                        base: "3%",
-                        md: "10%"
-                    })
-                }
-
-                    mb={{
-                        base: "30%",
-                        md: "0%"
-                    }}
-                    display={"flex"}
-                    flexDirection={{
-                        base: "column",
-                        md: "row"
-                    }}
-                >
+            <Box h="100vh" w="100vw">
+                <Box maxW={'100%'} h="100%" ml={useBreakpointValue({ base: "3%", md: "10%" })} mb={{ base: "30%", md: "0%" }} display="flex" flexDirection={{ base: "column", md: "row" }}>
                     <Stack
                         as={Box}
                         textAlign={'center'}
@@ -102,7 +84,7 @@ const Home = () => {
                         rounded={"xl"}
                     />
                 </Box>
-                <Container maxW={'70%'} h={{ base: "100%", md: "70%" }}>
+                <Container maxW={'70%'} h={{ base: "100%", md: "50%" }}>
                     <Stack
                         // h="90%"
                         align={'center'}
@@ -113,7 +95,7 @@ const Home = () => {
                             <Heading
                                 lineHeight={1.1}
                                 fontWeight={700}
-                                fontSize={{ base: '5xl', sm: '4xl', lg: '5xl' }}>
+                                fontSize={{ base: '5xl', sm: '5xl', lg: '5xl' }}>
                                 <Text
                                     as={'span'}
                                     position={'relative'}
@@ -168,8 +150,8 @@ const Home = () => {
                             position={'relative'}
                             w={'full'}>
                             <Blob
-                                w={'150%'}
-                                h={'150%'}
+                                w={'140%'}
+                                h={'140%'}
                                 position={'absolute'}
                                 top={'-20%'}
                                 left={0}
@@ -178,10 +160,10 @@ const Home = () => {
                             />
                             <Box
                                 position={'relative'}
-                                height={'300px'}
+                                height={'400px'}
                                 rounded={'2xl'}
                                 boxShadow={'2xl'}
-                                width={'full'}
+                                width={"500px"}
                                 overflow={'hidden'}>
                                 <Image
                                     alt={'Hero Image'}
@@ -195,66 +177,117 @@ const Home = () => {
                         </Flex>
                     </Stack>
                 </Container>
-                <Box h="100%">
-                    <Stack spacing={4} as={Container} maxW={'3xl'} textAlign={'center'}>
-                        <Heading fontSize={{ base: '2xl', sm: '4xl' }} fontWeight={'bold'}>
-                            Short heading
+                <Box h={"100%"} maxW="3xl" m="auto" p="4">
+                    <Stack
+                        textAlign={'center'}
+                        align={'center'}
+                        spacing={{ base: 8, md: 10 }}
+                        py={{ base: 20, md: 28 }}>
+                        <Heading
+                            fontWeight={"bold"}
+                            fontSize={{ base: '3xl', sm: '5xl', md: '6xl' }}
+                            lineHeight={'110%'}>
+                            Finding Hackathon{' '} <br />
+                            <Text as={'span'} color={'orange.400'}>
+                                made easy 🔥
+                            </Text>
                         </Heading>
-                        <Text color={'gray.600'} fontSize={{ base: 'sm', sm: 'lg' }}>
-                            Lorem ipsum dolor sit amet consectetur adipisicing elit. Reiciendis
-                            obcaecati ut cupiditate pariatur, dignissimos, placeat amet officiis.
+                        <Text color={'gray.500'} maxW={'2xl'} fontSize={{ base: 'sm', sm: 'sm', md: 'lg' }}>
+                            Find Hackathons Made Easy. Discover and join the most exciting hackathons effortlessly with our intuitive platform that streamlines your search and registration process. Unleash your creativity and connect with like-minded innovators as we simplify the hunt for hackathons, empowering you to focus on what matters most – building awesome projects.
+                        </Text>
+                        <Image
+                            className='glow-img'
+                            alt={'Hero Image'}
+                            fit={'cover'}
+                            m="auto"
+                            mt={{ base: "auto", md: "32" }}
+                            w={{ base: '100%', md: '100%' }}
+                            h={'50%'}
+                            src={'/hero.png'}
+                            rounded={"xl"}
+                        />
+                        <Stack spacing={6} direction={'row'}>
+                            <Button
+                                rounded={'full'}
+                                px={6}
+                                colorScheme={'orange'}
+                                bg={'orange.400'}
+                                _hover={{ bg: 'orange.500' }}>
+                                Get started
+                            </Button>
+                            <Button rounded={'full'} px={6}>
+                                Learn more
+                            </Button>
+                        </Stack>
+                    </Stack>
+                </Box>
+                <Box mt="10%" px={{ base: "2", md: "5" }}>
+                    <Stack spacing={4} as={Container} maxW={{ base: "xl", md: "3xl" }} textAlign="center">
+                        <Heading fontSize={{ base: "5xl", sm: "6xl" }} fontWeight="bold">
+                            Features
+                        </Heading>
+                        <Text color="gray.600" fontSize={{ base: "sm", sm: "lg" }}>
+                            One platform to rule them all. We provide a wide range of features to help you find your next hackathon, meet new people, and build awesome projects.
                         </Text>
                     </Stack>
-
-                    <Container maxW={'5xl'} mt={12}>
-                        <Flex flexWrap="wrap" gridGap={6} justify="center">
-                            <Card
-                                heading={'Heading'}
-                                icon={<Icon as={FcAssistant} w={10} h={10} />}
-                                description={
-                                    'Lorem ipsum dolor sit amet catetur, adipisicing elit.'
-                                }
-                                href={'#'}
-                            />
-                            <Card
-                                heading={'Heading'}
-                                icon={<Icon as={FcCollaboration} w={10} h={10} />}
-                                description={
-                                    'Lorem ipsum dolor sit amet catetur, adipisicing elit.'
-                                }
-                                href={'#'}
-                            />
-                            <Card
-                                heading={'Heading'}
-                                icon={<Icon as={FcDonate} w={10} h={10} />}
-                                description={
-                                    'Lorem ipsum dolor sit amet catetur, adipisicing elit.'
-                                }
-                                href={'#'}
-                            />
-                            <Card
-                                heading={'Heading'}
-                                icon={<Icon as={FcManager} w={10} h={10} />}
-                                description={
-                                    'Lorem ipsum dolor sit amet catetur, adipisicing elit.'
-                                }
-                                href={'#'}
-                            />
-                            <Card
-                                heading={'Heading'}
-                                icon={<Icon as={FcAbout} w={10} h={10} />}
-                                description={
-                                    'Lorem ipsum dolor sit amet catetur, adipisicing elit.'
-                                }
-                                href={'#'}
-                            />
-                        </Flex>
-                    </Container>
                 </Box>
-                <Box h="100vh">
+
+
+                <Box mt={12}>
+                    <Flex flexWrap="wrap" gridGap={6} justify="center">
+                        <Card
+                            heading={'Idea Pitching Platform'}
+                            icon={<Icon as={BsRocketTakeoff} color="red.400" w={10} h={10} />}
+                            description={'Share your startup ideas and receive feedback from a supportive community of entrepreneurs, investors, and industry experts.'}
+                            href={'#'}
+                        />
+                        <Card
+                            heading={'Co-founder Discovery'}
+                            icon={<Icon as={BsPeople} color="red.400" w={10} h={10} />}
+                            description={'Connect with potential co-founders who share your vision and complement your skill set, facilitating the formation of strong startup teams.'}
+                            href={'#'}
+                        />
+                        <Card
+                            heading={'Hackathon Team Building'}
+                            icon={<Icon as={IoMdBuild} color="red.400" w={10} h={10} />}
+                            description={'Find team members with diverse expertise for hackathons, allowing you to create dynamic and well-rounded teams to tackle challenges.'}
+                            href={'#'}
+                        />
+                        <Card
+                            heading={'Networking and Collaboration'}
+                            icon={<Icon as={MdEmojiPeople} color="red.400" w={10} h={10} />}
+                            description={'Engage with a vibrant network of innovators, mentors, and industry professionals, fostering valuable connections and collaboration opportunities.'}
+                            href={'#'}
+                        />
+                    </Flex>
+                </Box>
+
+                <Box h="80%" mt="10vh">
+                    <Stack spacing={4} as={Container} maxW={'3xl'} textAlign={'center'} mb="10vh">
+                        <Heading fontSize={{ base: '5xl', sm: '5xl' }} fontWeight={'bold'}>
+                            Built with
+                        </Heading>
+                        <Text color={'gray.600'} fontSize={{ base: 'sm', sm: 'lg' }}>
+                            Built with latest technologies to provide you with the best experience.
+                        </Text>
+                    </Stack>
+                    <SimpleGrid
+                        gap={10}
+                        columns={[2, null, 4]}
+                        justifyItems="center"
+                        alignItems="center"
+                        maxW="5xl"
+                        m="auto"
+                        p="7"
+                    >
+                        <Image src="/ts.png" alt="logo" h="auto" w="7rem" rounded="xl" />
+                        <Image src="/built-with-appwrite2.svg" alt="logo" h="7rem" w="7rem" rounded="xl" />
+                        <Image src="/reactts.png" alt="logo" h="7rem" w="rem" />
+                        <Image src="/chakra.png" alt="logo" h="auto" w="auto" p="7" rounded="xl" />
+                    </SimpleGrid>
 
                 </Box>
-            </Box>
+            </Box >
             <Box pos="fixed" bottom={"0"} width={"100vw"}>
                 <Footer />
             </Box>
@@ -296,7 +329,7 @@ const Card = ({ heading, description, icon }: CardProps) => {
             borderRadius="lg"
             overflow="hidden"
             p={5}>
-            <Stack align={'start'} spacing={2}>
+            <Stack align={'center'} spacing={2}>
                 <Flex
                     w={16}
                     h={16}
@@ -308,14 +341,14 @@ const Card = ({ heading, description, icon }: CardProps) => {
                     {icon}
                 </Flex>
                 <Box mt={2}>
-                    <Heading size="md">{heading}</Heading>
-                    <Text mt={1} fontSize={'sm'}>
+                    <Heading size="md" textAlign="center" textColor={"gray.600"}>{heading}</Heading>
+                    <Text mt={1} fontSize={'sm'} textAlign="center">
                         {description}
                     </Text>
                 </Box>
-                <Button variant={'link'} colorScheme={'blue'} size={'sm'}>
+                {/* <Button variant={'link'} colorScheme={'blue'} size={'sm'}>
                     Learn more
-                </Button>
+                </Button> */}
             </Stack>
         </Box>
     );

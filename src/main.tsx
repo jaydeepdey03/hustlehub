@@ -8,8 +8,8 @@ import { extendTheme } from "@chakra-ui/react"
 import AuthContextProvider from './context/AuthContext.tsx'
 
 const theme = extendTheme({
-  initialColorMode: "system",
-  useSystemColorMode: false,
+  initialColorMode: "dark",
+  useSystemColorMode: true,
   colors: {
     light: {},
     dark: {}
