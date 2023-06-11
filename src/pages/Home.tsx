@@ -11,7 +11,6 @@ import {
     Image,
     Flex,
     useBreakpointValue,
-    Grid,
     SimpleGrid,
 } from '@chakra-ui/react';
 // import ToggleTheme from "../components/Toggletheme"
