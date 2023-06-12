@@ -84,7 +84,7 @@ const Home = () => {
                         w={{ base: '90%', md: '50%' }}
                         mr="7"
                         h={'50%'}
-                        src={'/hero.png'}
+                        src={'/banner1.jpeg'}
                         rounded={"xl"}
                     />
                 </Box>
@@ -175,7 +175,7 @@ const Home = () => {
                                     align={'center'}
                                     w={'100%'}
                                     h={'100%'}
-                                    src={'/hero.png'}
+                                    src={'/banner2.jpeg'}
                                 />
                             </Box>
                         </Flex>
@@ -207,7 +207,7 @@ const Home = () => {
                             mt={{ base: "auto", md: "32" }}
                             w={{ base: '100%', md: '100%' }}
                             h={'50%'}
-                            src={'/hero.png'}
+                            src={'/banner3.jpeg'}
                             rounded={"xl"}
                         />
                         <Stack spacing={6} direction={'row'}>
@@ -265,7 +265,9 @@ const Home = () => {
                     </Flex>
                 </Box>
 
-                <Box h="80%" mt="10vh">
+                <Box h={
+                    { base: "80vh", md: "60vh" }
+                } mt="10vh">
                     <Stack spacing={4} as={Container} maxW={'3xl'} textAlign={'center'} mb="10vh">
                         <Heading fontSize={{ base: '5xl', sm: '5xl' }} fontWeight={'bold'}>
                             Built with

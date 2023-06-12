@@ -30,11 +30,11 @@ interface HackathoncardProps {
 }
 
 const Hackathoncard = (props: HackathoncardProps) => {
-    const { document  } = props
+    const { document } = props
     console.log(document, 'doc, props')
     const hackathonDisclosure = useDisclosure()
     const participantsBorder = useColorModeValue("gray", "white")
-    const headingColor = useColorModeValue('gray.700', 'white') 
+    const headingColor = useColorModeValue('gray.700', 'white')
 
     return (
         <>
@@ -84,22 +84,23 @@ const Hackathoncard = (props: HackathoncardProps) => {
                                     <chakra.span fontWeight={"normal"}>(Max: {document.noOfMembers})</chakra.span>
                                 </Text>
 
-                                {
-                                    document.members.length !== 0 ? (
-                                        <AvatarGroup size="sm" max={3}>
-                                            {document?.members?.map((member: string) => (
-                                                <Profilecard userId={member} created={false} details={false} key={member} />
-                                            ))}
-                                        </AvatarGroup>
-                                    
-                                    ) 
-                                    
-                                    : (
-                                        <Text fontSize="sm" color={participantsBorder}>
-                                            No Participants yet
-                                        </Text>
-                                    )
-                                }
+                                <AvatarGroup size="sm" max={3}>
+                                    {
+                                        document.members.length !== 0 ? (
+                                            <>
+                                                {document?.members?.map((member: string) => (
+                                                    <Profilecard userId={member} created={false} details={false} key={member} />
+                                                ))}
+                                            </>
+                                        )
+
+                                            : (
+                                                <Text fontSize="sm" color={participantsBorder}>
+                                                    No Participants yet
+                                                </Text>
+                                            )
+                                    }
+                                </AvatarGroup>
 
                             </Stack>
                             {/* Button */}

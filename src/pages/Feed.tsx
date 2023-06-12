@@ -65,7 +65,7 @@ const Feed = () => {
             }<Box h="100vh" w="100vw" overflowY={"overlay" as any} boxSizing="border-box">
                 <Navbar />
                 <Box m={"auto"} p="6" w={{ base: "100vw", xl: "70vw" }}>
-                    <Tabs position="relative" variant="unstyled" isFitted defaultIndex={0}>
+                    <Tabs position="relative" variant="unstyled" isFitted defaultIndex={0} isLazy>
                         <TabList>
                             <Tab _focus={{ outline: 'none' }} _hover={{ outline: 'none' }}>
                                 <BsRocketTakeoff />

@@ -1,4 +1,4 @@
-import { Avatar, Link as ChakraLink, Divider, HStack, Icon, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Stack, Text, VStack, useColorModeValue, useDisclosure } from "@chakra-ui/react"
+import { Avatar, AvatarGroup, Link as ChakraLink, Divider, HStack, Icon, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Stack, Text, VStack, useColorModeValue, useDisclosure } from "@chakra-ui/react"
 import { useEffect, useState } from "react"
 import { DB } from "../appwrite/appwrite-config"
 import { User } from '../types/MyData'
@@ -31,15 +31,19 @@ const Profilecard = (props: ProfilecardProps) => {
     const borderColor = useColorModeValue("gray.200", "gray.700");
 
     if (details === false) return (
-        <Avatar name={user.name} size={"sm"} />
+        <AvatarGroup size="sm" max={3}>
+            <Avatar name={user.name} size={"sm"} />
+        </AvatarGroup>
     )
     else return (
         <>
             <Stack direction={'row'} spacing={4} align={'center'} onClick={onOpen} cursor={"pointer"}>
-                <Avatar
-                    // src={'https://avatars0.githubusercontent.com/u/1164541?v=4'}
-                    name={user.name}
-                />
+                <AvatarGroup size="sm" max={3}>
+                    <Avatar
+                        // src={'https://avatars0.githubusercontent.com/u/1164541?v=4'}
+                        name={user.name}
+                    />
+                </AvatarGroup>
                 <Stack direction={'column'} spacing={0} fontSize={'sm'}>
                     {created && <Text fontSize={"xs"} fontWeight={300}>Created by</Text>}
                     <Text fontWeight={600}>{user.name}</Text>
@@ -55,7 +59,7 @@ const Profilecard = (props: ProfilecardProps) => {
                     <ModalBody>
                         <VStack
                             h="100%"
-                            w={{ base: "100%"}}
+                            w={{ base: "100%" }}
                             rounded={"xl"}
                             border={"1px solid"}
                             borderColor={borderColor}
@@ -87,6 +91,7 @@ const Profilecard = (props: ProfilecardProps) => {
                                 <Text fontSize={"sm"} fontWeight={"semibold"} color="gray.500">{user.email}</Text>
                             </HStack>
                             <Divider w="80%" m="auto" />
+                            <Text fontSize={"sm"} fontWeight={"semibold"} color="gray.500">Socials</Text>
                             <HStack h="4vh" style={{
                                 marginBottom: "32px"
                             }}

@@ -165,7 +165,7 @@ const HackathonPage = () => {
                     h="100%"
                     w={{ base: "100%", lg: "30%" }}
                     border={"2px solid"}
-                    borderColor={'gray.200'}
+                    borderColor={useColorModeValue('gray.200', 'gray.600')}
                     rounded={"xl"}
                     spacing={{ base: 4, lg: 10 }}
                     alignItems={"center"}
@@ -212,7 +212,7 @@ const HackathonPage = () => {
                     h="100%"
                     w={{ base: "100%", lg: "60%" }}
                     border={"2px solid"}
-                    borderColor={useColorModeValue('gray.200', 'gray.700')}
+                    borderColor={useColorModeValue('gray.200', 'gray.600')}
                     rounded={"xl"}
                     spacing={{ base: 4, md: 6 }}
                     p={{ base: 4, md: 10 }}
