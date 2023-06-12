@@ -1,7 +1,7 @@
 # Hustlehub
 HustleHub is a dynamic platform that connects passionate entrepreneurs, enabling collaboration and fostering innovation in the startup ecosystem. Join the hustle and unlock your entrepreneurial potential.
 
-%[https://www.youtube.com/watch?v=LOqzw4_7QWc] 
+[Youtube Promo](https://www.youtube.com/watch?v=LOqzw4_7QWc)
 
 #Appwrite #AppwriteHackathon
 
