@@ -1,9 +1,5 @@
 const Privateroute = () => {
-    return (
-        <div>
-            
-        </div>
-    )
-}
+  return <div></div>;
+};
 
-export default Privateroute
+export default Privateroute;

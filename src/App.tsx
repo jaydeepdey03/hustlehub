@@ -1,22 +1,19 @@
-import { Route, Routes } from 'react-router-dom'
-import './App.css'
-import Home from './pages/Home'
-import Login from './pages/Login'
-import Register from './pages/Register'
-import ForgotPassword from './pages/Forgotpassword'
-import Feed from './pages/Feed'
-import ResetPassword from './pages/Resetpassword'
-import { Box } from '@chakra-ui/react'
-import Profile from './pages/Profile'
-import StartupPage from './pages/StartupPage'
-import HackathonPage from './pages/HackathonPage'
+import { Route, Routes } from "react-router-dom";
+import "./App.css";
+import Home from "./pages/Home";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import ForgotPassword from "./pages/Forgotpassword";
+import Feed from "./pages/Feed";
+import ResetPassword from "./pages/Resetpassword";
+import { Box } from "@chakra-ui/react";
+import Profile from "./pages/Profile";
+import StartupPage from "./pages/StartupPage";
+import HackathonPage from "./pages/HackathonPage";
 
 function App() {
-
-  
-
   return (
-    <Box className='entire-box'>
+    <Box className="entire-box">
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
@@ -30,7 +27,7 @@ function App() {
         <Route path="/hackathon/:id" element={<HackathonPage />} />
       </Routes>
     </Box>
-  )
+  );
 }
 
-export default App
+export default App;

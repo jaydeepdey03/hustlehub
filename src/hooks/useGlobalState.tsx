@@ -1,7 +1,7 @@
-import { Context } from "../context/AuthContext"
-import { useContext } from "react"
+import { Context } from "../context/AuthContext";
+import { useContext } from "react";
 const useGlobalState = () => {
-    return useContext(Context)
-}
+  return useContext(Context);
+};
 
-export default useGlobalState
+export default useGlobalState;
